@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Wishlist</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Homepage.css">
+    <link rel="stylesheet" href="CSS files/Cart.css">
+  </head>
+  <body>
+    <h1>View your favourite sites</h1>
+
+    <div id="copiedCardsContainer"></div>
+
+    <script>
+      function displayWishlist() {
+        const wishlistContainer = document.getElementById("copiedCardsContainer");
+        wishlistContainer.innerHTML = "";  
+
+        const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+        if (wishlist.length > 0) {
+          wishlist.forEach((itemHTML, index) => {
+            const itemWrapper = document.createElement("div");
+            itemWrapper.classList.add("wishlist-item");
+            itemWrapper.innerHTML = itemHTML;
+
+            const removeButton = document.createElement("button");
+            removeButton.classList.add("remove-btn");
+            removeButton.innerText = "Remove from Wishlist";
+            removeButton.onclick = () => removeFromWishlist(index);
+            itemWrapper.appendChild(removeButton);
+
+            wishlistContainer.appendChild(itemWrapper);
+          });
+        } else {
+          wishlistContainer.innerHTML = "<h2><mark>Your wishlist is empty</mark></h2>";
+        }
+      }
+
+      function removeFromWishlist(index) {
+        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+        wishlist.splice(index, 1);  
+        localStorage.setItem("wishlist", JSON.stringify(wishlist)); 
+        alert("Successfully removed from wishlist!!!"); 
+        displayWishlist(); 
+      }
+
+      window.onload = displayWishlist;
+    </script>
+
+  </body>
+</html>

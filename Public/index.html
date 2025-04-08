@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sunrise Real Estate Agency</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg" />
+    <link rel="stylesheet" href="CSS files/index.css" />
+  </head>
+  <body>
+    <h1>Sunrise Real Estate Agency</h1>
+    <div class="container">
+      <div class="card">
+        <div>
+        <img src="Images/users.png" alt="Click here to load image">
+      </div>
+        <h2>User</h2>
+        <p>Click below if you are a Client.</p>
+        <button onclick="clientSide()">User</button>
+      </div>
+      <div class="card">
+        <div>
+        <img src="Images/admin.png" alt="Click here to load image">
+      </div>
+        <h2>Admin</h2>
+        <p>Click below if you are an Admin.</p>
+        <button onclick="openModal()">Admin</button>
+      </div>
+    </div>
+
+    <div class="modal" id="adminModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>Admin Login</h2>
+        <input type="email" id="adminEmail" placeholder="Email" required />
+        <input type="password" id="adminPassword" placeholder="Password" required/>
+        <button class="button" onclick="validateAdmin()">Login</button>
+        <p id="errorMessage" style="color: red; display: none">Email or password is incorrect...Check again.</p>
+        <p id="fillMessage" style="color: red; display: none">Email and password is required to login.</p>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2024 Sunrise Real Estate Agency. All rights reserved.</p>
+  </footer>
+    <script>
+      function clientSide() {
+        window.location.href = "main.html";
+      }
+
+      function openModal() {
+        document.getElementById("adminModal").style.display = "block";
+        const modal = document.getElementById("adminModal");
+        modal.classList.add("show");
+        modal.style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("adminModal").style.display = "none";
+        document.getElementById("errorMessage").style.display = "none";
+        const modal = document.getElementById("adminModal");
+        modal.classList.remove("show");
+        setTimeout(() => {
+          modal.style.display = "none";
+        }, 300);
+      }
+
+      function validateAdmin() {
+        const email = document.getElementById("adminEmail").value;
+        const password = document.getElementById("adminPassword").value;
+        const correctEmail = "ayush10@gmail.com";
+        const correctPassword = "10ayush";
+
+        if (email === correctEmail && password === correctPassword) {
+          window.location.href = "admin.html";
+        }else if(email === "" || password === ""){
+          document.getElementById("fillMessage").style.display = "block";
+        }else if(document.getElementById("errorMessage").style.display = "block"){
+            
+            document.getElementById("fillMessage").style.display = "none";
+          }
+        else {
+          document.getElementById("errorMessage").style.display = "block";
+        }
+      }
+
+      window.onclick = function (event) {
+        const modal = document.getElementById("adminModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+    </script>
+  </body>
+</html>

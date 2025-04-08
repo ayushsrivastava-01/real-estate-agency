@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Details.css"></head>
+<body>
+    <h1>Customers List</h1>
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Query</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- table data will be displayed here-->
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch users data from the back-end
+fetch('http://localhost:1000/customer_details')
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.querySelector('#usersTable tbody');
+
+        data.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.number}</td>
+                <td>${user.query}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+    });
+
+    </script>
+</body>
+</html>

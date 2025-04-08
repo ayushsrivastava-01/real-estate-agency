@@ -1,0 +1,237 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgb(221, 226, 90), rgb(91, 91, 252));
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2em;
+    color: #fff;
+    margin-bottom: 10.5%;
+    font-weight: bold;
+}
+
+/* Center the container horizontally */
+.container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background: linear-gradient(145deg, #ffe8e8, #ffdbd3);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    width: 320px;
+    height: 280px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:nth-child(1) {
+    background: linear-gradient(145deg, #ffecd2, #fcb69f);
+}
+
+.card:nth-child(2) {
+    background: linear-gradient(145deg, #cfd9df, #e2ebf0);
+}
+
+.card h2 {
+    font-size: 1.5em;
+    color: #444;
+    margin-bottom: 10px;
+    margin-top: 15vh;
+}
+
+.card p {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+.card div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.card div img{
+    position: absolute;
+    max-height: 10rem;
+    max-width: 10rem;
+    border-radius: 50%;
+}
+.card button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    color: #fff;
+}
+
+.card:nth-child(1) button {
+    background-color: #f77e53;
+}
+
+.card:nth-child(2) button {
+    background-color: #556270;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card button:hover {
+    transform: translateY(-2px);
+}
+
+.card button:active {
+    transform: translateY(0px);
+    background-color: #444;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark background overlay */
+    transition: opacity 0.4s ease; /* Smooth transition effect */
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    margin: 10% auto;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    color: #333;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(0.7);
+    transition: all 0.3s ease;
+}
+
+.modal-content h2 {
+    font-size: 1.8em;
+    color: #444;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.modal.show .modal-content {
+    transform: scale(1); /* Smooth scale-in effect */
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #111;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #666;
+    outline: none;
+}
+
+.button {
+    width: 100%;
+    padding: 12px;
+    background-color: #556270;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+#adminModal .button:active {
+    transform: translateY(1px);
+}
+
+#errorMessage {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+}
+
+
+footer {
+    width: 100%;
+    padding: 20px;
+    background: rgb(6, 99, 99);
+    color: #fff;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    font-size: 1em;
+    border-top: 2px solid #ddd;
+}
+
+footer p {
+    /* margin-top: 5%; */
+    margin: 0;
+}
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card {
+        width: 90%;
+        max-width: 320px;
+    }
+}

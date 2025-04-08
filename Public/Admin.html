@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Real Estate Agency</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Admin.css">
+</head>
+<body>
+    <h1>~ Sunrise Real Estate Agency ~</h1>
+    <h1>"Admin Panel"</h1>
+    
+    <div class="container">
+        <div class="card">
+            <h2>View Details</h2>
+            <div>
+                <img src="Images/details.png" alt="Click to load images">
+            </div>
+            <p>Click below to see customer details.</p>
+            <button onclick="seeDetails()">See Details</button>
+        </div>
+        
+        <div class="card">
+            <h2>Logout</h2>
+            <div>
+                <img src="Images/logout.png" alt="Click to load images">
+            </div>
+            <p>Click below to log out.</p>
+            <button onclick="logOut()">Logout</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Sunrise Real Estate Agency. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function seeDetails() {
+        window.location.href = 'Details.html';
+}
+
+function logOut() {
+    // window.close();  
+    window.open('index.html','_blank');  
+}
+
+    </script>
+</body>
+</html>
