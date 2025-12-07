@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Wishlist - Sunrise Real Estate</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="wishlist-nav">
+        <div class="nav-container">
+            <a href="main.html" class="back-home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            <div class="nav-logo">
+                <img src="Images/new logo.jpg" alt="Sunrise Logo">
+                <span>Sunrise Real Estate</span>
+            </div>
+            <div class="nav-actions">
+                <button onclick="clearWishlist()" class="clear-btn">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="wishlist-header">
+        <div class="header-content">
+            <h1><i class="fas fa-heart"></i> My Wishlist</h1>
+            <p class="subtitle">Your saved properties for future reference</p>
+            <div class="wishlist-stats">
+                <div class="stat-item">
+                    <i class="fas fa-home"></i>
+                    <span id="propertyCount">0</span>
+                    <small>Properties</small>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar"></i>
+                    <span id="lastUpdated">Today</span>
+                    <small>Last Updated</small>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="wishlist-container">
+        <div class="container">
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-heart-broken"></i>
+                </div>
+                <h2>Your wishlist is empty</h2>
+                <p>Start exploring properties and add them to your wishlist!</p>
+                <a href="Search.html" class="explore-btn">
+                    <i class="fas fa-search"></i> Explore Properties
+                </a>
+            </div>
+
+            <!-- Wishlist Items -->
+            <div id="wishlistItems" class="wishlist-grid">
+                <!-- Items will be dynamically inserted here -->
+            </div>
+
+            <!-- Summary Section -->
+            <div id="summarySection" class="summary-section">
+                <h3><i class="fas fa-list-alt"></i> Wishlist Summary</h3>
+                <div class="summary-content">
+                    <div class="summary-item">
+                        <span>Total Properties:</span>
+                        <strong id="totalProperties">0</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>For Sale:</span>
+                        <strong id="forSaleCount">0</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>For Rent:</span>
+                        <strong id="forRentCount">0</strong>
+                    </div>
+                    <div class="summary-actions">
+                        <button onclick="printWishlist()" class="action-btn print-btn">
+                            <i class="fas fa-print"></i> Print List
+                        </button>
+                        <button onclick="shareWishlist()" class="action-btn share-btn">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                        <button onclick="contactAgent()" class="action-btn contact-btn">
+                            <i class="fas fa-phone"></i> Contact Agent
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="wishlist-footer">
+        <p>
+            <i class="fas fa-info-circle"></i> Your wishlist is saved locally in your browser.
+            <button onclick="showHelp()" class="help-btn">
+                <i class="fas fa-question-circle"></i> Need Help?
+            </button>
+        </p>
+        <p class="copyright">
+            &copy; 2024 Sunrise Real Estate Agency. All rights reserved.
+        </p>
+    </footer>
+
+    <!-- Modal for Property Details -->
+    <div id="propertyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeHelpModal()">&times;</span>
+            <h3><i class="fas fa-question-circle"></i> Wishlist Help</h3>
+            <div class="help-content">
+                <div class="help-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <div>
+                        <h4>Adding Properties</h4>
+                        <p>Click the heart icon on any property card to add it to your wishlist.</p>
+                    </div>
+                </div>
+                <div class="help-item">
+                    <i class="fas fa-trash"></i>
+                    <div>
+                        <h4>Removing Properties</h4>
+                        <p>Click the "Remove" button on any property card to remove it from your wishlist.</p>
+                    </div>
+                </div>
+                <div class="help-item">
+                    <i class="fas fa-share-alt"></i>
+                    <div>
+                        <h4>Sharing Wishlist</h4>
+                        <p>Use the Share button to send your wishlist to friends or family.</p>
+                    </div>
+                </div>
+                <div class="help-item">
+                    <i class="fas fa-print"></i>
+                    <div>
+                        <h4>Printing</h4>
+                        <p>Print your wishlist for offline reference or to share with your agent.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Property database - MUST MATCH what's in Search.html
+        const propertiesDatabase = [
+            {
+                id: 1,
+                title: "House for Sale",
+                type: "House",
+                price: "₹50 Lakh",
+                location: "Greater Noida, Sector-55",
+                bedrooms: "3 BHK",
+                image: "Images/House 4.jpg",
+                details: "Modern house and apartment",
+                area: "1500 sq.ft",
+                status: "For Sale",
+                link: "House 2.html"
+            },
+            {
+                id: 2,
+                title: "Villa for Sale",
+                type: "Villa",
+                price: "₹1.2 Crore",
+                location: "Banglore, Sector-45",
+                bedrooms: "4 BHK",
+                image: "Images/House.jpg",
+                details: "Luxury villa with garden",
+                area: "2500 sq.ft",
+                status: "For Sale",
+                link: "House 4.html"
+            },
+            {
+                id: 3,
+                title: "Flat for Rent",
+                type: "Flat",
+                price: "₹25,000/month",
+                location: "Nagloi, Old Delhi",
+                bedrooms: "2 BHK",
+                image: "Images/bedroom 2.jpg",
+                details: "Fully furnished flat",
+                area: "1000 sq.ft",
+                status: "For Rent",
+                link: "House 6.html"
+            },
+            {
+                id: 4,
+                title: "Modern Apartment",
+                type: "Apartment",
+                price: "₹75 Lakh",
+                location: "Delhi, Block-B",
+                bedrooms: "3 BHK",
+                image: "Images/apartment.jpg",
+                details: "Modern apartment with amenities",
+                area: "1200 sq.ft",
+                status: "For Sale",
+                link: "main.html"
+            },
+            {
+                id: 5,
+                title: "Shop for Rent",
+                type: "Shop",
+                price: "₹40,000/month",
+                location: "Market Area, Noida",
+                image: "Images/shop.jpg",
+                details: "Commercial shop in prime location",
+                area: "800 sq.ft",
+                status: "For Rent",
+                link: "main.html"
+            }
+        ];
+
+        // Initialize wishlist when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            displayWishlist();
+            updateLastUpdated();
+        });
+
+        function displayWishlist() {
+            const wishlistContainer = document.getElementById('wishlistItems');
+            const emptyState = document.getElementById('emptyState');
+            const summarySection = document.getElementById('summarySection');
+            const propertyCount = document.getElementById('propertyCount');
+            const totalProperties = document.getElementById('totalProperties');
+            const forSaleCount = document.getElementById('forSaleCount');
+            const forRentCount = document.getElementById('forRentCount');
+            
+            // Get wishlist from localStorage
+            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            
+            console.log('Wishlist from localStorage:', wishlist); // Debug log
+            
+            // Update counts
+            propertyCount.textContent = wishlist.length;
+            totalProperties.textContent = wishlist.length;
+            
+            // Calculate property types
+            let saleCount = 0;
+            let rentCount = 0;
+            
+            // Clear container first
+            wishlistContainer.innerHTML = '';
+            
+            // Show/hide empty state and summary
+            if (wishlist.length === 0) {
+                emptyState.style.display = 'block';
+                summarySection.style.display = 'none';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+                summarySection.style.display = 'block';
+            }
+            
+            // Display each wishlist item
+            wishlist.forEach((propertyId, index) => {
+                console.log('Looking for property ID:', propertyId); // Debug log
+                
+                // Find property in database
+                const property = propertiesDatabase.find(p => p.id == propertyId);
+                
+                if (property) {
+                    console.log('Found property:', property); // Debug log
+                    
+                    // Create property card
+                    const propertyCard = createPropertyCard(property, index);
+                    wishlistContainer.appendChild(propertyCard);
+                    
+                    // Count by status
+                    if (property.status === 'For Sale') saleCount++;
+                    if (property.status === 'For Rent') rentCount++;
+                } else {
+                    console.warn('Property not found for ID:', propertyId);
+                }
+            });
+            
+            // Update counts
+            forSaleCount.textContent = saleCount;
+            forRentCount.textContent = rentCount;
+        }
+
+        function createPropertyCard(property, index) {
+            const card = document.createElement('div');
+            card.className = 'property-card';
+            card.setAttribute('data-id', property.id);
+            
+            card.innerHTML = `
+                <div class="property-image">
+                    <img src="${property.image}" alt="${property.title}" onclick="viewPropertyDetails(${property.id})">
+                    <div class="property-badge ${property.status === 'For Sale' ? 'sale-badge' : 'rent-badge'}">
+                        ${property.status}
+                    </div>
+                    <button class="quick-view-btn" onclick="viewPropertyDetails(${property.id})">
+                        <i class="fas fa-eye"></i> Quick View
+                    </button>
+                </div>
+                <div class="property-content">
+                    <div class="property-header">
+                        <h3>${property.title}</h3>
+                        <button class="favorite-btn active" onclick="removeFromWishlist(${index})" title="Remove from Wishlist">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${property.location}</span>
+                    </div>
+                    <div class="property-details">
+                        ${property.bedrooms ? `
+                        <div class="detail-item">
+                            <i class="fas fa-bed"></i>
+                            <span>${property.bedrooms}</span>
+                        </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>${property.area}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-home"></i>
+                            <span>${property.type}</span>
+                        </div>
+                    </div>
+                    <div class="property-price">
+                        <strong>${property.price}</strong>
+                        <span class="price-label">${property.status === 'For Rent' ? '/month' : ''}</span>
+                    </div>
+                    <div class="property-actions">
+                        <a href="${property.link}" class="view-btn" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> View Details
+                        </a>
+                        <button class="remove-btn" onclick="removeFromWishlist(${index})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function removeFromWishlist(index) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            
+            if (index >= 0 && index < wishlist.length) {
+                const propertyId = wishlist[index];
+                const property = propertiesDatabase.find(p => p.id == propertyId);
+                
+                if (property && confirm(`Are you sure you want to remove "${property.title}" from your wishlist?`)) {
+                    wishlist.splice(index, 1);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    
+                    showNotification('Property removed from wishlist!', 'success');
+                    displayWishlist();
+                }
+            }
+        }
+
+        function clearWishlist() {
+            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            
+            if (wishlist.length === 0) {
+                showNotification('Your wishlist is already empty!', 'info');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to clear your entire wishlist?')) {
+                localStorage.removeItem('wishlist');
+                showNotification('Wishlist cleared successfully!', 'success');
+                displayWishlist();
+            }
+        }
+
+        function viewPropertyDetails(propertyId) {
+            const property = propertiesDatabase.find(p => p.id == propertyId);
+            if (!property) return;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-property">
+                    <div class="modal-image">
+                        <img src="${property.image}" alt="${property.title}">
+                    </div>
+                    <div class="modal-details">
+                        <h3>${property.title}</h3>
+                        <div class="modal-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${property.location}
+                        </div>
+                        <div class="modal-stats">
+                            ${property.bedrooms ? `
+                            <div class="stat">
+                                <i class="fas fa-bed"></i>
+                                <span>${property.bedrooms}</span>
+                            </div>
+                            ` : ''}
+                            <div class="stat">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>${property.area}</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-home"></i>
+                                <span>${property.type}</span>
+                            </div>
+                        </div>
+                        <div class="modal-description">
+                            <h4>Description</h4>
+                            <p>${property.details}</p>
+                        </div>
+                        <div class="modal-price">
+                            <h4>Price</h4>
+                            <div class="price-tag">${property.price}</div>
+                        </div>
+                        <div class="modal-actions">
+                            <a href="${property.link}" class="modal-view-btn" target="_blank">
+                                <i class="fas fa-external-link-alt"></i> Full Details
+                            </a>
+                            <button class="modal-close-btn" onclick="closeModal()">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('propertyModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('propertyModal').style.display = 'none';
+        }
+
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'block';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        function updateLastUpdated() {
+            const lastUpdated = document.getElementById('lastUpdated');
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            lastUpdated.textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function printWishlist() {
+            window.print();
+        }
+
+        function shareWishlist() {
+            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            if (wishlist.length === 0) {
+                showNotification('Add properties to wishlist before sharing!', 'info');
+                return;
+            }
+            
+            const propertyTitles = wishlist.map(id => {
+                const property = propertiesDatabase.find(p => p.id == id);
+                return property ? property.title : '';
+            }).filter(title => title);
+            
+            const shareText = `My Property Wishlist from Sunrise Real Estate:\n\n${propertyTitles.join('\n')}\n\nCheck them out!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Property Wishlist',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(shareText);
+                showNotification('Wishlist copied to clipboard!', 'success');
+            }
+        }
+
+        function contactAgent() {
+            window.location.href = 'Contact Form.html';
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }, 10);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const propertyModal = document.getElementById('propertyModal');
+            const helpModal = document.getElementById('helpModal');
+            
+            if (event.target === propertyModal) {
+                closeModal();
+            }
+            if (event.target === helpModal) {
+                closeHelpModal();
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeHelpModal();
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printWishlist();
+            }
+        });
+    </script>
+</body>
+</html>

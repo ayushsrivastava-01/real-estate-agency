@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sunrise Real Estate | Find Your Dream Property</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/index.css">
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="bg-elements">
+        <div class="sun"></div>
+        <div class="wave"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-sun"></i>
+            </div>
+            <div class="logo-text">Sunrise Real Estate</div>
+        </div>
+        <div class="nav-contact">
+            <!-- <i class="fas fa-phone-alt"></i>  -->
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Find Your <span style="background: var(--gradient-sunrise); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Dream Property</span> With Us</h1>
+            <p class="hero-tagline">
+                Experience excellence in real estate. From luxury homes to commercial spaces, 
+                we help you find the perfect property that matches your dreams and aspirations.
+            </p>
+            
+            <!-- Portal Cards -->
+            <div class="portals">
+                <div class="portal-card" onclick="clientSide()">
+                    <div class="portal-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Find Your Home</h3>
+                    <p>Browse thousands of properties, schedule viewings, and connect with expert agents to find your perfect home.</p>
+                    <button class="portal-btn">Explore Properties</button>
+                </div>
+                
+                <div class="portal-card" onclick="openModal()">
+                    <div class="portal-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Admin Portal</h3>
+                    <p>Access the powerful admin dashboard to manage properties, clients, and real estate operations seamlessly.</p>
+                    <button class="portal-btn">Admin Login</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2,500+</div>
+                <div class="stat-label">Properties Sold</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Client Satisfaction</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+            <!-- <div class="stat-card">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Expert Agents</div>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- Admin Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Admin Access</h2>
+            <p style="color: #666; margin-bottom: 30px;">Enter your credentials to access the admin dashboard</p>
+            
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="adminEmail" placeholder="admin@sunrise.com" required />
+            </div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="adminPassword" placeholder="••••••••" required/>
+            </div>
+            
+            <button class="login-btn" onclick="validateAdmin()">
+                <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+            </button>
+            
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i> Invalid email or password
+            </div>
+            <div class="error-message" id="fillMessage">
+                <i class="fas fa-info-circle"></i> Please fill all required fields
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">Sunrise Real Estate</div>
+                <p>Your trusted partner in finding dream properties since 2008.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Sunrise Blvd, Miami, FL</p>
+                <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                <p><i class="fas fa-envelope"></i> info@sunriserealestate.com</p>
+            </div>
+            
+            <!-- <div class="footer-section">
+                <h4>Quick Links</h4>
+                <p><a href="#" style="color: white; text-decoration: none;">Properties</a></p>
+                <p><a href="#" style="color: white; text-decoration: none;">Services</a></p>
+                <p><a href="#" style="color: white; text-decoration: none;">About Us</a></p>
+                <p><a href="#" style="color: white; text-decoration: none;">Careers</a></p>
+            </div> -->
+        </div>  
+        
+        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p>&copy; 2024 Sunrise Real Estate Agency. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced JavaScript with modern features
+        function clientSide() {
+            const button = event.currentTarget;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            button.style.background = 'var(--accent)';
+            
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 800);
+        }
+
+        function openModal() {
+            const modal = document.getElementById('adminModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Clear previous inputs
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+            
+            // Hide error messages
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('fillMessage').style.display = 'none';
+            
+            // Focus on email input
+            setTimeout(() => {
+                document.getElementById('adminEmail').focus();
+            }, 300);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('adminModal');
+            modal.style.animation = 'modalFade 0.3s reverse';
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.style.animation = '';
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        function validateAdmin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const correctEmail = "ayush10@gmail.com";
+            const correctPassword = "1010";
+            const errorMsg = document.getElementById('errorMessage');
+            const fillMsg = document.getElementById('fillMessage');
+            const loginBtn = document.querySelector('.login-btn');
+            
+            // Hide previous messages
+            errorMsg.style.display = 'none';
+            fillMsg.style.display = 'none';
+            
+            // Validate inputs
+            if (!email || !password) {
+                fillMsg.style.display = 'block';
+                shakeModal();
+                return;
+            }
+            
+            if (email === correctEmail && password === correctPassword) {
+                // Success animation
+                loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
+                loginBtn.style.background = 'var(--accent)';
+                
+                // Simulate loading
+                setTimeout(() => {
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+                    
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 1000);
+                }, 500);
+            } else {
+                // Show error
+                errorMsg.style.display = 'block';
+                shakeModal();
+                
+                // Add error effect to inputs
+                const inputs = document.querySelectorAll('.modal input');
+                inputs.forEach(input => {
+                    input.style.borderColor = '#ff4757';
+                    input.style.animation = 'shake 0.5s ease';
+                    
+                    setTimeout(() => {
+                        input.style.animation = '';
+                    }, 500);
+                });
+            }
+        }
+
+        function shakeModal() {
+            const modalContent = document.querySelector('.modal-content');
+            modalContent.style.animation = 'modalSlide 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            
+            setTimeout(() => {
+                modalContent.style.animation = '';
+            }, 500);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('adminModal');
+            
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+            
+            if (e.key === 'Enter' && modal.style.display === 'block' && 
+                (document.activeElement.id === 'adminEmail' || document.activeElement.id === 'adminPassword')) {
+                validateAdmin();
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = (e) => {
+            const modal = document.getElementById('adminModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Add floating animation to cards on scroll
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.portal-card');
+            const scrollPosition = window.scrollY;
+            
+            cards.forEach((card, index) => {
+                const cardPosition = card.getBoundingClientRect().top + scrollPosition;
+                const delay = index * 100;
+                
+                if (scrollPosition > cardPosition - window.innerHeight + 100) {
+                    card.style.animationDelay = `${delay}ms`;
+                    card.style.animationPlayState = 'running';
+                }
+            });
+        });
+
+        // Initialize particles
+        function createParticles() {
+            const bgElements = document.querySelector('.bg-elements');
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 10 + 5;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const delay = Math.random() * 20;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                particle.style.background = i % 2 === 0 ? 'var(--primary)' : 'var(--secondary)';
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                bgElements.appendChild(particle);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createParticles();
+            
+            // Add CSS for shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

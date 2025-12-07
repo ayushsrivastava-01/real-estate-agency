@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Agency</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Homepage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="logo"><a href="#home"><img src="Images/new logo.jpg" alt="Click here to load logo"></a></div>
+    <input type="checkbox" id="click">
+    <label for="click" class="menu-btn">
+    <i class="fas fa-bars"></i>
+    </label>
+    <ul>
+       <li><a class="active" href="#home">Home</a></li>
+       <li><a href="Contact Form.html">Contact Us</a></li>
+       <li><a href="#about">About</a></li>
+       <li><a href="Search.html">Search</a></li>
+       <li><a href="#buy-sell">Buy/Sell</a></li>
+       <li><a href="Cart.html">&#x1F6D2 Wishlist</a></li>
+       <!-- <li><a href="" onclick="openModal()">Login/SignUp</a></li>  onclick="openDialog(true)"       -->
+    </ul>
+ </nav>
+ <!-- </div> -->
+  <br id="home">
+        
+    <!-- Theme toggle button -->
+    <div id="theme-toggle" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+          <span class="close-btn" onclick="closeModal()">&times;</span>
+          <form action="/login" method="POST">
+          <div id="login-form">
+              <h2>Login</h2>
+              <label for="email">Email:</label>
+              <input type="email" id="email" name="email" required placeholder="Enter your email">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required placeholder="Enter your password">
+              <input type="button" value="Login" class="button" onclick="login()">
+              <input type="button" value="Create New Account" class="button"  onclick="showSignup()">
+          </div>
+          </form>
+          
+          <form action="/" method="POST">
+          <div id="signup-form" style="display: none;">
+              <h2>Create Account</h2>
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="username" required placeholder="Enter your name">
+              <label for="email-signup">Email:</label>
+              <input type="email" name="emailid" id="email-signup" required placeholder="Enter your email">
+              <label for="password-signup">Password:</label>
+              <input type="password" name="pass" id="password-signup" required placeholder="Create your password">
+              <label for="address">Address:</label>
+              <input type="text" id="address" name="address" required placeholder="Enter your address">
+              <label for="contact">Contact:</label>
+              <input type="text" id="contact" name="contact" required placeholder="Enter your contact">
+              <input type="submit" class="button" value="Sign Up">
+              <input type="button" class="button" value="Back to Login" onclick="showLogin()">
+          </div>
+        </form>
+      </div>
+  </div>
+      <div class="intro-section">
+        <div class="intro-text">
+            <h1>Welcome to <b style="color: red;">"Sunrise Corporate Limited"</b></h1>
+            <h2>Here you will find your dream property made simple and enjoyable.</h2>
+            <h3>Explore our listings,and let us help you turn your vision of the perfect home into reality.</h3><br>
+            <a href="#services">Explore Now</a>
+        </div>
+        <div class="intro-image">
+            <img src="Images/House 3.jpg" alt="Click here to load image">
+        </div>
+      </div><br id="services">
+    
+      
+    <h1 class="facilities-head" id="animation">Facilities provided by Us</h1>
+    <div class="container">
+        <div class="card" id="animation">
+            <img src="Images/house.png" alt="Click here to load image">
+            <h1>Buy House</h1>
+            <p>You can easily buy your perfect choice house as your need,budget,etc...</p>        
+        </div>
+        <div class="card" id="animation">
+            <img src="Images/rent house.png" alt="Click here to load image">
+            <h1>Rent House</h1>
+            <p>You can take any property for rent as per your need.</p>        
+        </div>
+        <div class="card" id="animation">
+            <img src="Images/sale house.png" alt="Click here to load image">
+            <h1>Sell House</h1>
+            <p>We help you to sell your property in a high price from it's value.</p>
+        </div>
+        <div class="card" id="animation">
+            <img src="Images/flat.png" alt="Click here to load image">
+            <h1>Flats & Buildings</h1>
+            <p>Top flats & buildings are available for your use.</p>
+        </div>
+        <div class="card" id="animation">
+            <img src="Images/shop.png" alt="Click here to load image">
+            <h1>Shops & Malls</h1>
+            <p>To increase your business we help you to get perfect shop/mall as per your need.</p>
+        </div>
+        <div class="card" id="animation">
+            <img src="Images/contact.png" alt="Click here to load image">
+            <h1>24 x 7 Service</h1>
+            <p id="buy-sell">Feel free to contact us any time,any where.</p>
+        </div>
+    </div>
+
+
+    <h1 class="facilities-head" id="animation">Popular Listings</h1>
+    <div class="house-container">
+        <div class="house" id="animation">
+            <img src="Images/House 2.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>House for Sale</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add"></i>
+            </div>
+            <h4>Modern house and apartment</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">Greater Noida,Sector-55,Block C,Near xyz chauraha</p>
+            </div>
+            <a href="House.html" class="property-btn">View Property</a>
+        </div>
+
+        <div class="house house1" id="animation">
+            <img src="Images/House 4.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>Flat for Sale</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add1"></i>
+            </div>
+            <h4>Flat and apartment</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">Nagloi,Gali-3,Old Delhi,India</p>
+            </div>
+            <a href="House 2.html" class="property-btn">View Property</a>        
+        </div>
+        <div class="house house2" id="animation">
+            <img src="Images/House Inside.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>Villa for Sale</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add2"></i>
+            </div>
+            <h4>Luxury Villa</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">Banglore,Sector-45,Near IIMT College,India</p>
+            </div>
+            <a href="House 3.html" class="property-btn">View Property</a>
+        </div>
+        <div class="house house3" id="animation">
+            <img src="Images/House.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>Building for Rent</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add3"></i>
+            </div>
+            <h4>Big Bungalow</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">Andheri West,Near Gali-30,Mumbai</p>
+            </div>
+            <a href="House 4.html" class="property-btn">View Property</a>
+        </div>
+        <div class="house house4" id="animation">
+            <img src="Images/home.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>House for Sale</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add4"></i>
+            </div>
+            <h4>Modern house</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">London,Near xyz beach,United Kingdom</p>
+            </div>
+            <a href="House 5.html" class="property-btn">View Property</a>
+        </div>
+        <div class="house house5" id="animation">
+            <img src="Images/bedroom 2.jpg" alt="Click here to load image">
+            <div class="ctr">
+                <h2>Flat for Rent</h2>
+                <i class="fas fa-heart" title="Add to Wishlist" id="add5"></i>
+            </div>
+            <h4>Modern flat</h4>
+            <div class="location">
+                <i class="fas fa-map-marker-alt" id="locate"></i>
+                <p style="color: black;">Toronto,Sector-C20,Canada</p>
+            </div>
+            <a href="House 6.html" class="property-btn" id="about">View Property</a>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <div class="about-image" id="animation">
+            <img src="Images/red house 3.png" alt="Click here to load image">
+        </div>
+
+        <div class="about" id="animation">
+            <h1>About Us</h1>
+            <p><b style="color: red; font-weight: bold; font-family: cursive;">"Sunrise Real Estate Agency"</b> is a reputated company standing in market since last 20 years and we provide you a believe.It will help you to get your needs in just few clicks instead of personally going to the site and we gurantee the believe of our customers.Because your dreams is also our dream.</p>
+        </div>
+    </div>
+      <br id="locations">
+    
+      <h1 class="facilities-head" id="animation">Some Popular Locations</h1>
+    <div class="popular-locations">
+        <div class="city" id="animation">Ayodhya</div>        
+        <div class="city" id="animation">Noida</div>        
+        <div class="city" id="animation">Delhi</div>        
+        <div class="city" id="animation">Lucknow</div>        
+        <div class="city" id="animation">Gurugram</div>        
+        <div class="city" id="animation">Banglore</div>        
+        <div class="city" id="animation">Gonda</div> 
+        <div class="city" id="animation">Chennai</div>        
+        <div class="city" id="animation">Hisar</div>        
+        <div class="city" id="animation">Agra</div>        
+        <div class="city" id="animation">Manali</div>        
+        <div class="city" id="animation">Other</div>             
+    </div>
+    <br id="reviews">
+
+
+    <h1 class="facilities-head reviewsss" id="animation">Our Customer Reviews</h1>
+    <section class="testimonials" id="animation">
+        <div class="wrapper">
+          <div class="testimonial-content" id="reviews">
+            <div class="swiper slider">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide testimonial-item" id="animation">
+                  <div class="info">
+                    <img src="Images/person 2.jpeg" alt="Click here to load image"/>
+                    <div class="name-job">
+                      <h3 class="name">Magnus</h3>
+                      <span class="job">Noida,U.P.</span>
+                      <h4>-Helpful</h4>
+                    </div>
+                  </div>
+                  <p>
+                    They handled everything with professionalism and secured an excellent offer in record time. Highly recommend!"
+                  </p>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <div class="swiper-slide testimonial-item" id="animation">
+                  <div class="info">
+                    <img src="Images/person 5.jpeg" alt="Click here to load image" />
+                    <div class="name-job">
+                      <h3 class="name">Maria</h3>
+                      <span class="job">Delhi,India</span>
+                      <h4>-Very Good</h4>
+                    </div>
+                  </div>
+                  <p>
+                    Such a pretty experience and the staff was very supportive specially Mr.Ayush the CEO.I loved to be connected with them. 
+                  </p>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+
+                <div class="swiper-slide testimonial-item" id="animation">
+                  <div class="info">
+                    <img src="Images/person 3.jpeg" alt="Click here to load image" />
+                    <div class="name-job">
+                      <h3 class="name">Lalit</h3>
+                      <span class="job">Gonda,U.P.</span>
+                      <h4>-Nice</h4>
+                    </div>
+                  </div>
+                  <p>
+                    They were attentive to all our needs and provided clear communication throughout.I am very happy with my purchase!"
+                  </p>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <div class="swiper-slide testimonial-item" id="animation">
+                  <div class="info">
+                    <img src="Images/person 4.jpeg" alt="Click here to load image" />
+                    <div class="name-job">
+                      <h3 class="name">Rosy</h3>
+                      <span class="job">Chennai,India</span>
+                      <h4>-Helpful</h4>
+                    </div>
+                  </div>
+                  <p>
+                    They made sure I was informed at every stage, and I felt valued as a client. Truly a pleasant, smooth experience!"
+                  </p>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <div class="swiper-slide testimonial-item">
+                  <div class="info">
+                    <img src="Images/person 1.jpeg" alt="Click here to load image" />
+                    <div class="name-job">
+                      <h3 class="name">Joseph</h3>
+                      <span class="job">Ayodhya,U.P.</span>
+                      <h4>-Helpful</h4>
+                    </div>
+                  </div>
+                  <p>
+                    Their agent was professional, personable, and made me feel comfortable through every step. I am grateful for their support!"
+                  </p>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="back-top-section" id="home">
+        <a href="#home">Back to top</a>
+    </div>
+<hr>
+<div class="footer-section" id="footer">
+  
+      <div class="footer developer" id="animation">
+        <ul>
+            <img src="Images/ayush.jpg" alt="Click here to load image" class="developer-img">
+            <h3>Mr. Ayush Srivastava</h3>
+            <h5>C.E.O. (Sunrise Corporate Limited)</h5>            
+            <a><i class="fas fa-phone" id="phone"></i> +91 8541201247</a>
+            <a id="email"><i class="fas fa-envelope" id="mail"></i> sunrise20ltd@gmail.com</a>
+        </ul>
+    </div>
+
+
+    <div class="footer" id="animation">
+        <ul>
+            <p>Contact Us</p>
+            <a><i class="fas fa-phone" id="phone"></i> +91 1234567890</a>
+            <a><i class="fas fa-phone" id="phone"></i> +91 1097874521</a>
+            <a id="email"><i class="fas fa-envelope" id="mail"></i> sunriseinfo@gmail.com</a>
+            <a><i class="fas fa-map-marker-alt" id="branch-icon"></i> Greater Noida, Sector-51(Main Branch)</a>
+            <a><i class="fas fa-map-marker-alt" id="branch-icon"></i> Delhi, Block-B(Second Branch)</a>
+        </ul>
+    </div>
+
+    <div class="footer" id="animation">
+        <ul>
+            <p>Get to Know Us</p>
+            <a href="#home">Home</a>
+            <a href="#about">About Us</a>
+            <a href="#locations">Locations</a>
+            <a href="Search.html">Search</a>
+            <a href="#reviews">Ratings & Reviews</a>
+        </ul>
+    </div>
+
+    <div class="footer" id="animation">
+        <ul>
+            <p>Join us on Social Media</p>
+            <a><i class="fab fa-whatsapp" id="whatsapp"></i> Whatsapp</a>
+            <a id="facebook"><i class="fab fa-facebook-f" id="fb"></i>  Facebook</a>
+            <a id="instagram"><i class="fab fa-instagram" id="insta"></i> Instagram</a>
+            <a id="twitter"><i class="fab fa-twitter" id="twit"></i> Twitter</a>
+            <a id="linkedin"><i class="fab fa-linkedin icon" id="in"></i> LinkedIn</a>
+        </ul>
+    </div>
+
+</div>
+<hr>     
+<div class="copyright-section">
+    <p>Conditions of Use Privacy Notice Your Ads Privacy Choices<br>&#169; 2004-2024, sunriserea.com, Inc. or its affiliates</p>
+</div>
+
+
+<!-- 
+<script>
+  function openModal() {
+  document.getElementById('modal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+function login() {
+  alert('Login functionality is not implemented...');
+
+}
+
+function showSignup() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('signup-form').style.display = 'block';
+}
+
+function showLogin() {
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+document.querySelector('nav ul li:last-child a').onclick = function(event) {
+  event.preventDefault();
+  openModal(); 
+};
+
+window.onclick = function(event) {
+  const modal = document.getElementById('modal');
+  if (event.target === modal) {
+      closeModal();
+  }
+};
+
+</script> -->
+
+      <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+      <script>  
+            var swiper = new Swiper(".slider", {
+                grabCursor: true,
+                slidesPerView: 2,
+                spaceBetween: 30,
+                pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+        });
+  </script>
+
+ 
+<script>
+  let themeToggle = document.querySelector("#theme-toggle");
+  let body = document.body;
+
+themeToggle.onclick = function() {
+    body.classList.toggle("dark-mode");
+
+    let icon = themeToggle.querySelector("i");
+    icon.classList.toggle("fa-moon");
+    icon.classList.toggle("fa-sun");
+
+    if (body.classList.contains("dark-mode")) {
+        icon.style.color = "#fff"; 
+    } else {
+        icon.style.color = "#000"; 
+    }
+};
+</script>
+
+<!-- smooth scroll  -->
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+
+</script>
+
+<!-- add to cart script-->
+
+  <script>
+function addToWishlist(houseClass) {
+    const card = document.querySelector(houseClass);
+    const cardHTML = card.outerHTML;
+
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+    wishlist.push(cardHTML);
+
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+    
+    alert("Item added to wishlist!");
+
+    // window.location.href = 'Cart.html';
+}
+
+
+document.getElementById('add').addEventListener('click', function() { addToWishlist('.house'); });
+document.getElementById('add1').addEventListener('click', function() { addToWishlist('.house1'); });
+document.getElementById('add2').addEventListener('click', function() { addToWishlist('.house2'); });
+document.getElementById('add3').addEventListener('click', function() { addToWishlist('.house3'); });
+document.getElementById('add4').addEventListener('click', function() { addToWishlist('.house4'); });
+document.getElementById('add5').addEventListener('click', function() { addToWishlist('.house5'); });
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenMax.min.js"></script> 
+   <script type="text/javascript" src="cssanimation-gsap.js"></script>
+</body>
+</html>

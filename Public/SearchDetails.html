@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Analytics - Admin</title>
+    <link rel="stylesheet" href="CSS files/Details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header">
+            <button onclick="window.location.href='Admin.html'" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Admin Panel
+            </button>
+            <h1>🔍 Property Search Analytics</h1>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Total Searches</h3>
+                    <p id="totalSearches" class="stat-number">0</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Most Searched Type</h3>
+                    <p id="mostSearchedType" class="stat-number">-</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>Average Budget</h3>
+                    <p id="avgBudget" class="stat-number">-</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Data Table -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3><i class="fas fa-table"></i> Recent Searches</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="searchTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Property Type</th>
+                                <th>Location</th>
+                                <th>Budget</th>
+                                <th>Bedrooms</th>
+                                <th>Area</th>
+                                <th>Status</th>
+                                <th>Sort By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-bar"></i> Search Distribution by Property Type</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="searchChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Export Button -->
+        <div class="mt-4 mb-4 text-center">
+            <button onclick="exportToExcel()" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <button onclick="refreshData()" class="btn btn-primary ms-2">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+        </div>
+    </div>
+    
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        let searchChart;
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSearchData();
+            loadStatistics();
+        });
+        
+        function loadSearchData() {
+            fetch('http://localhost:1000/search_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('searchTableBody');
+                    tableBody.innerHTML = '';
+                    
+                    data.forEach(search => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(search.created_at || search.timestamp).toLocaleString()}</td>
+                            <td><span class="badge bg-primary">${search.property}</span></td>
+                            <td>${search.location}</td>
+                            <td><span class="badge bg-success">${search.price}</span></td>
+                            <td>${search.rooms}</td>
+                            <td>${search.area}</td>
+                            <td><span class="badge bg-info">${search.pstatus}</span></td>
+                            <td>${search.sort}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    createChart(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('searchTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Error loading data
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+        
+        function loadStatistics() {
+            fetch('http://localhost:1000/search_stats')
+                .then(response => response.json())
+                .then(stats => {
+                    document.getElementById('totalSearches').textContent = stats.totalSearches;
+                    document.getElementById('mostSearchedType').textContent = stats.mostSearchedType;
+                    document.getElementById('avgBudget').textContent = stats.avgBudget;
+                })
+                .catch(error => {
+                    console.error('Error fetching statistics:', error);
+                });
+        }
+        
+        function createChart(data) {
+            const ctx = document.getElementById('searchChart').getContext('2d');
+            
+            // Destroy existing chart if exists
+            if (searchChart) {
+                searchChart.destroy();
+            }
+            
+            // Group data by property type
+            const propertyTypes = ['House', 'Apartment', 'Villa', 'Flat', 'Shop', 'Office', 'Other'];
+            const counts = propertyTypes.map(type => 
+                data.filter(item => item.property === type).length
+            );
+            
+            // Filter out zero counts for better visualization
+            const filteredTypes = propertyTypes.filter((type, index) => counts[index] > 0);
+            const filteredCounts = counts.filter(count => count > 0);
+            
+            searchChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: filteredTypes,
+                    datasets: [{
+                        data: filteredCounts,
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                            '#9966FF', '#FF9F40', '#C9CBCF'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Property Type Distribution',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function exportToExcel() {
+            const table = document.getElementById('searchTable');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Search Data");
+            XLSX.writeFile(wb, "Search_Analytics.xlsx");
+        }
+        
+        function refreshData() {
+            loadSearchData();
+            loadStatistics();
+            alert('Data refreshed successfully!');
+        }
+    </script>
+</body>
+</html>

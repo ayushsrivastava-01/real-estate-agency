@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visit House</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/Search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="#home"><img src="Images/new logo.jpg" alt="Click here to load logo"></a></div>
+        <div class="marquee-container">
+            <marquee behavior="scroll" direction="left">Welcome to "Sunrise Real Estate Agency"...Hope you are doing well...You can search here your own category...Thank You...</marquee>
+        </div>
+     </nav>
+<br id="home">
+      <!-- Theme toggle button -->
+    <div id="theme-toggle" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- customer search form -->
+     <div class="form-container">   
+        <h1 style="text-align: center; margin-bottom: 2%; color: black;">Search Your Category</h1>
+        <form id="searchForm" method="POST">
+            <label for="property-type">Enter your Property type</label>
+            <select name="property" id="property-type" required>
+                <option value="">Select Property Type</option>
+                <option value="House">House</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Shop">Shop</option>
+                <option value="Office">Office</option>
+                <option value="Villa">Villa</option>
+                <option value="Flat">Flat</option>
+                <option value="Other">Other...</option>
+            </select>
+
+            <label for="location">Enter your Location</label>
+            <select name="location" id="location" required>
+                <option value="">Select Location</option>
+                <option value="city">City/Town</option>
+                <option value="road">Near Road</option>
+                <option value="near-market">Near Market</option>
+                <option value="other">Other...</option>
+            </select>
+
+            <label for="price">Enter your Budget</label>
+            <select name="price" id="price" required>
+                <option value="">Select Budget</option>
+                <option value="5l">5 lakh</option>
+                <option value="10l">10 lakh</option>
+                <option value="20l">20 lakh</option>
+                <option value="30l">30 lakh</option>
+                <option value="50l">50 lakh</option>
+                <option value="60l">60 lakh</option>
+                <option value="80l">80 lakh</option>
+                <option value="1cr">1 Crore</option>
+                <option value="2cr">2 Crore</option>
+                <option value="5cr">5 Crore</option>
+                <option value="more">More...</option>
+            </select>
+
+            <label for="rooms">No. of Bedrooms</label>
+            <select name="rooms" id="rooms" required>
+                <option value="">Select Bedrooms</option>
+                <option value="1">1 BHK</option>
+                <option value="2">2 BHK</option>
+                <option value="3">3 BHK</option>
+                <option value="4">4 BHK</option>
+                <option value="5">5 BHK</option>
+                <option value="6">6 BHK</option>
+                <option value="7">7 BHK</option>
+                <option value="8">8 BHK</option>
+                <option value="more">More...</option>
+            </select>
+
+            <label for="bathroom">No. of Bathrooms</label>
+            <select name="bathroom" id="bathroom" required>
+                <option value="">Select Bathrooms</option>
+                <option value="1b">1 Bathroom</option>
+                <option value="2b">2 Bathrooms</option>
+                <option value="3b">3+ Bathrooms</option>
+            </select>
+
+            <label for="area">Enter Area(in sq.ft)</label>
+            <select name="area" id="area" required>
+                <option value="">Select Area</option>
+                <option value="200sf">200 Square Feet</option>
+                <option value="500sf">500 Square Feet</option>
+                <option value="1000sf">1000 Square Feet</option>
+                <option value="1500sf">1500 Square Feet</option>
+                <option value="2000sf">2000+ Square Feet</option>
+            </select>
+
+            <label for="pstatus">Property Status</label>
+            <select name="pstatus" id="pstatus" required>
+                <option value="">Select Status</option>
+                <option value="completef">Complete (with furnitures)</option>
+                <option value="complete">Complete (without furnitures)</option>
+                <option value="under-construction">Under Construction</option>               
+                <option value="sale">For Sale</option>               
+                <option value="rent">For Rent</option>               
+            </select>
+
+            <label for="sort">Sort By</label>
+            <select name="sort" id="sort" required>
+                <option value="">Sort By</option>
+                <option value="low">Price (Low to High)</option>
+                <option value="high">Price (High to Low)</option>
+            </select>
+
+            <button type="submit" class="button">Search</button>             
+        </form>
+     </div>
+
+     <!-- Loading spinner -->
+     <div class="loader" style="display: none;">
+        <div class="custom-loader"></div>     
+    </div>
+
+     <h1 class="facilities-head" id="animation" style="display: none;">Your searched Results</h1>
+     <div class="house-container" id="buy-sell" style="display: none;">
+         <!-- Results will be dynamically inserted here -->
+     </div>
+
+    <div class="back-top-section">
+        <a href="main.html" id="animation">Back to Homepage>></a>
+    </div>
+<hr>
+
+    <!-- Footer section -->
+    <div class="footer-section" id="footer">
+  
+        <div class="footer developer" id="animation">
+          <ul>
+              <img src="Images/ayush.jpg" alt="Click here to load image" class="developer-img">
+              <h3>Mr. Ayush Srivastava</h3>
+              <h5>C.E.O. (Sunrise Corporate Limited)</h5>            
+              <a><i class="fas fa-phone" id="phone"></i> +91 8541201247</a>
+              <a id="email"><i class="fas fa-envelope" id="mail"></i> sunrise20ltd@gmail.com</a>
+          </ul>
+      </div>
+  
+  
+      <div class="footer" id="animation">
+          <ul>
+              <p>Contact Us</p>
+              <a><i class="fas fa-phone" id="phone"></i> +91 1234567890</a>
+              <a><i class="fas fa-phone" id="phone"></i> +91 1097874521</a>
+              <a id="email"><i class="fas fa-envelope" id="mail"></i> sunriseinfo@gmail.com</a>
+              <a><i class="fas fa-map-marker-alt" id="branch-icon"></i> Greater Noida, Sector-51(Main Branch)</a>
+              <a><i class="fas fa-map-marker-alt" id="branch-icon"></i> Delhi, Block-B(Second Branch)</a>
+          </ul>
+      </div>
+  
+      <div class="footer" id="animation">
+          <ul>
+              <p>Get to Know Us</p>
+              <a href="main.html">Home</a>
+              <a href="main.html#about">About Us</a>
+              <a href="main.html#locations">Locations</a>
+              <a href="Search.html">Search</a>
+              <a href="main.html#reviews">Ratings & Reviews</a>
+          </ul>
+      </div>
+  
+      <div class="footer" id="animation">
+          <ul>
+              <p>Join us on Social Media</p>
+              <a><i class="fab fa-whatsapp" id="whatsapp"></i> Whatsapp</a>
+              <a id="facebook"><i class="fab fa-facebook-f" id="fb"></i>  Facebook</a>
+              <a id="instagram"><i class="fab fa-instagram" id="insta"></i> Instagram</a>
+              <a id="twitter"><i class="fab fa-twitter" id="twit"></i> Twitter</a>
+              <a id="linkedin"><i class="fab fa-linkedin icon" id="in"></i> LinkedIn</a>
+          </ul>
+      </div>
+  
+  </div>
+  <hr>     
+  <div class="copyright-section">
+      <p>Conditions of Use Privacy Notice Your Ads Privacy Choices<br>&#169; 2004-2024, sunriserea.com, Inc. or its affiliates</p>
+  </div>
+  
+<script>
+    let themeToggle = document.querySelector("#theme-toggle");
+    let body = document.body;
+  
+    themeToggle.onclick = function() {
+        body.classList.toggle("dark-mode");
+        let icon = themeToggle.querySelector("i");
+        icon.classList.toggle("fa-moon");
+        icon.classList.toggle("fa-sun");
+        if (body.classList.contains("dark-mode")) {
+            icon.style.color = "#fff"; 
+        } else {
+            icon.style.color = "#000"; 
+        }
+    };
+</script>
+  
+<script>
+    document.getElementById('searchForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const loader = document.querySelector('.loader');
+        const resultsSection = document.querySelector('.facilities-head');
+        const houseContainer = document.getElementById('buy-sell');
+        
+        // Show loader
+        loader.style.display = 'flex';
+        
+        try {
+            // Collect form data
+            const formData = new FormData(this);
+            
+            // Send AJAX request
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(formData)
+            });
+            
+            const properties = await response.json();
+            
+            // Hide loader
+            loader.style.display = 'none';
+            
+            // Show results section
+            resultsSection.style.display = 'block';
+            houseContainer.style.display = 'flex';
+            
+            // Clear existing properties
+            houseContainer.innerHTML = '';
+            
+            // Display properties
+            properties.forEach((property, index) => {
+                // Use property.link from server or fallback to default
+                const propertyFile = property.link || 
+                    (property.id === 1 ? 'House 2.html' : 
+                     property.id === 2 ? 'House 4.html' : 
+                     property.id === 3 ? 'House 6.html' : 'main.html');
+                
+                const propertyHTML = `
+                    <div class="house" id="animation">
+                        <img src="${property.image}" alt="${property.title}">
+                        <div class="ctr">
+                            <h2>${property.title}</h2>
+                            <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id})"></i>
+                        </div>
+                        <h4>${property.details}</h4>
+                        <div class="location">
+                            <i class="fas fa-map-marker-alt" id="locate"></i>
+                            <p style="color: black;">${property.location}</p>
+                        </div>
+                        <p><strong>Price:</strong> ${property.price}</p>
+                        <p><strong>Type:</strong> ${property.type}</p>
+                        <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
+                        <p><strong>Area:</strong> ${property.area}</p>
+                        <p><strong>Status:</strong> ${property.status}</p>
+                        <a href="${propertyFile}" class="property-btn">View Property</a>
+                    </div>
+                `;
+                houseContainer.innerHTML += propertyHTML;
+            });
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            
+        } catch (error) {
+            console.error('Error:', error);
+            loader.style.display = 'none';
+            alert('Error searching properties. Please try again.');
+        }
+    });
+    
+    function addToWishlist(propertyId) {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        if (!wishlist.includes(propertyId)) {
+            wishlist.push(propertyId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            alert("Item added to wishlist!");
+        } else {
+            alert("Item is already in your wishlist!");
+        }
+    }
+    
+    // Initial static properties (for testing if AJAX fails)
+    function loadStaticProperties() {
+        const staticProperties = [
+            {
+                id: 1,
+                title: "House for Sale",
+                type: "House",
+                price: "₹50 Lakh",
+                location: "Greater Noida, Sector-55",
+                bedrooms: "3 BHK",
+                image: "Images/House 4.jpg",
+                details: "Modern house and apartment",
+                area: "1500 sq.ft",
+                status: "For Sale",
+                link: "House 2.html"
+            },
+            {
+                id: 2,
+                title: "Villa for Sale",
+                type: "Villa",
+                price: "₹1.2 Crore",
+                location: "Banglore, Sector-45",
+                bedrooms: "4 BHK",
+                image: "Images/House.jpg",
+                details: "Luxury villa with garden",
+                area: "2500 sq.ft",
+                status: "For Sale",
+                link: "House 4.html"
+            },
+            {
+                id: 3,
+                title: "Flat for Rent",
+                type: "Flat",
+                price: "₹25,000/month",
+                location: "Nagloi, Old Delhi",
+                bedrooms: "2 BHK",
+                image: "Images/bedroom 2.jpg",
+                details: "Fully furnished flat",
+                area: "1000 sq.ft",
+                status: "For Rent",
+                link: "House 6.html"
+            }
+        ];
+        
+        // Display static properties on page load (for testing)
+        const houseContainer = document.getElementById('buy-sell');
+        if (houseContainer.children.length === 0) {
+            staticProperties.forEach(property => {
+                const propertyHTML = `
+                    <div class="house" id="animation">
+                        <img src="${property.image}" alt="${property.title}">
+                        <div class="ctr">
+                            <h2>${property.title}</h2>
+                            <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id})"></i>
+                        </div>
+                        <h4>${property.details}</h4>
+                        <div class="location">
+                            <i class="fas fa-map-marker-alt" id="locate"></i>
+                            <p style="color: black;">${property.location}</p>
+                        </div>
+                        <p><strong>Price:</strong> ${property.price}</p>
+                        <p><strong>Type:</strong> ${property.type}</p>
+                        <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
+                        <p><strong>Area:</strong> ${property.area}</p>
+                        <p><strong>Status:</strong> ${property.status}</p>
+                        <a href="${property.link}" class="property-btn">View Property</a>
+                    </div>
+                `;
+                houseContainer.innerHTML += propertyHTML;
+            });
+        }
+    }
+    
+    // Load static properties on page load for testing
+    window.addEventListener('DOMContentLoaded', loadStaticProperties);
+</script>
+
+  <!-- smooth scroll  -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+  </script>
+  
+  <!-- Static wishlist function -->
+  <script>
+    function addToWishlistFromStatic(propertyId) {
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        if (!wishlist.includes(propertyId)) {
+            wishlist.push(propertyId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            alert("Item added to wishlist!");
+            window.location.href = 'Cart.html';
+        } else {
+            alert("Item is already in your wishlist!");
+        }
+    }
+  </script>
+</body>
+</html>
