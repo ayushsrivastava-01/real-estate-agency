@@ -1,18 +1,25 @@
-// auth-check.js - CASE-INSENSITIVE VERSION
+// auth-check.js - UPDATED FOR NETLIFY
 console.log("🔒 Auth-check.js LOADING...");
 
 // Block access IMMEDIATELY
 (function() {
-    // List of protected pages (all lowercase for comparison)
-    const PROTECTED_PAGES = ["admin.html", "searchdetails.html", "details.html"];
+    // List of protected pages - handle ALL case variations
+    const PROTECTED_PATHS = [
+        "admin", "Admin", "admin.html", "Admin.html",
+        "searchdetails", "SearchDetails", "searchdetails.html", "SearchDetails.html",
+        "details", "Details", "details.html", "Details.html"
+    ];
     
-    // Get current page (convert to lowercase)
-    const currentPage = window.location.pathname.toLowerCase().split('/').pop();
-    console.log("📄 Current page (lowercase):", currentPage);
+    // Get current page path
+    const currentPath = window.location.pathname;
+    console.log("📍 Full path:", currentPath);
     
-    // Check if current page is protected
-    const isProtected = PROTECTED_PAGES.includes(currentPage);
-    console.log("🔒 Is protected?", isProtected);
+    // Extract just the filename or last part
+    let currentPage = currentPath.split('/').pop();
+    if (!currentPage) currentPage = ''; // Handle root
+    
+    console.log("📄 Current page:", currentPage);
+    console.log("🔒 Is protected?", PROTECTED_PATHS.includes(currentPage));
     
     // Check if user is authenticated
     function checkAuth() {
@@ -20,9 +27,10 @@ console.log("🔒 Auth-check.js LOADING...");
         const email = localStorage.getItem('adminEmail');
         const isLoggedIn = token === "AYUSH_AUTH_9788" && email === "ayush10@gmail.com";
         
-        console.log("🔑 Authentication check:", {
+        console.log("🔑 Auth check result:", {
             hasToken: !!token,
-            email: email,
+            tokenValid: token === "AYUSH_AUTH_9788",
+            emailValid: email === "ayush10@gmail.com",
             isLoggedIn: isLoggedIn
         });
         
@@ -30,19 +38,18 @@ console.log("🔒 Auth-check.js LOADING...");
     }
     
     // If page is protected and user is NOT logged in
-    if (isProtected && !checkAuth()) {
-        console.log("🚫 ACCESS DENIED! Redirecting...");
+    if (PROTECTED_PATHS.includes(currentPage) && !checkAuth()) {
+        console.log("🚫 ACCESS DENIED! Page is protected but user not authenticated");
         
-        // Store where they tried to go (with correct case)
-        const originalPage = window.location.pathname.split('/').pop();
-        localStorage.setItem('redirectAfterLogin', originalPage);
+        // Store the original page they tried to access
+        localStorage.setItem('redirectAfterLogin', currentPage);
         
-        // BLOCK PAGE LOAD IMMEDIATELY
+        // BLOCK and REDIRECT IMMEDIATELY
         document.write(`
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Access Denied - Sunrise Real Estate</title>
+                <title>Access Restricted | Sunrise Real Estate</title>
                 <meta http-equiv="refresh" content="0;url=https://sunriserealestate.netlify.app/">
                 <style>
                     body {
@@ -65,10 +72,6 @@ console.log("🔒 Auth-check.js LOADING...");
                         border: 1px solid rgba(255,255,255,0.2);
                         max-width: 500px;
                     }
-                    h1 {
-                        margin-bottom: 20px;
-                        font-size: 2.5em;
-                    }
                     .spinner {
                         border: 5px solid rgba(255,255,255,0.3);
                         border-top: 5px solid white;
@@ -87,7 +90,7 @@ console.log("🔒 Auth-check.js LOADING...");
             <body>
                 <div class="container">
                     <h1>🔒 Access Restricted</h1>
-                    <p>You must login to access this page.</p>
+                    <p>Please login to access the admin panel.</p>
                     <div class="spinner"></div>
                     <p style="margin-top: 20px; font-size: 0.9em;">
                         Redirecting to homepage...
@@ -97,13 +100,8 @@ console.log("🔒 Auth-check.js LOADING...");
             </html>
         `);
         
-        // Force redirect after 1 second
-        setTimeout(() => {
-            window.location.href = "https://sunriserealestate.netlify.app/";
-        }, 1000);
-        
-        // Stop all further execution
-        throw new Error("Access blocked - not authenticated");
+        // Force stop execution
+        throw new Error("Access blocked - authentication required");
     }
     
     console.log("✅ Access granted!");
@@ -113,30 +111,42 @@ console.log("🔒 Auth-check.js LOADING...");
 window.authSystem = {
     // Login function
     login: function(email, password) {
-        console.log("Login attempt:", email);
+        console.log("🔐 Login attempt for:", email);
+        
         if (email === "ayush10@gmail.com" && password === "9788") {
+            // Set authentication tokens
             localStorage.setItem('adminToken', 'AYUSH_AUTH_9788');
             localStorage.setItem('adminEmail', email);
             localStorage.setItem('loginTime', new Date().getTime());
+            
             console.log("✅ Login successful!");
             
-            // Redirect to intended page or admin dashboard
+            // Get redirect destination
             const redirectTo = localStorage.getItem('redirectAfterLogin') || "Admin.html";
+            console.log("🔄 Redirecting to:", redirectTo);
+            
+            // Clear redirect storage
             localStorage.removeItem('redirectAfterLogin');
-            window.location.href = redirectTo;
+            
+            // Redirect
+            setTimeout(() => {
+                window.location.href = "https://sunriserealestate.netlify.app/" + redirectTo;
+            }, 500);
+            
             return true;
         }
-        console.log("❌ Login failed!");
+        
+        console.log("❌ Login failed - invalid credentials");
         return false;
     },
     
     // Logout function
     logout: function() {
+        console.log("🚪 Logging out...");
         localStorage.removeItem('adminToken');
         localStorage.removeItem('adminEmail');
         localStorage.removeItem('loginTime');
         localStorage.removeItem('redirectAfterLogin');
-        console.log("✅ Logged out");
         window.location.href = "https://sunriserealestate.netlify.app/";
     },
     
@@ -146,15 +156,15 @@ window.authSystem = {
         const email = localStorage.getItem('adminEmail');
         const loginTime = localStorage.getItem('loginTime');
         
-        // Check token exists
+        // Basic checks
         if (!token || !email) {
-            console.log("❌ No auth token found");
+            console.log("❌ Not logged in: Missing token or email");
             return false;
         }
         
-        // Check token validity
+        // Validate credentials
         if (token !== "AYUSH_AUTH_9788" || email !== "ayush10@gmail.com") {
-            console.log("❌ Invalid token");
+            console.log("❌ Not logged in: Invalid token or email");
             this.logout();
             return false;
         }
@@ -164,14 +174,19 @@ window.authSystem = {
             const currentTime = new Date().getTime();
             const twoHours = 2 * 60 * 60 * 1000;
             if (currentTime - parseInt(loginTime) > twoHours) {
-                console.log("❌ Session expired");
+                console.log("❌ Not logged in: Session expired");
                 this.logout();
                 return false;
             }
         }
         
-        console.log("✅ User authenticated:", email);
+        console.log("✅ User is logged in as:", email);
         return true;
+    },
+    
+    // Get current user
+    getCurrentUser: function() {
+        return localStorage.getItem('adminEmail');
     }
 };
 

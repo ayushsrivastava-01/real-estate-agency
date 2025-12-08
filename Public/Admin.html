@@ -299,6 +299,19 @@
                 hideLogoutModal();
             }
         });
+
+        //new wala
+        function performLogout() {
+    // Use auth system
+    if (window.authSystem) {
+        window.authSystem.logout();
+    } else {
+        // Fallback
+        localStorage.clear();
+        window.location.href = "https://sunriserealestate.netlify.app/";
+    }
+}
     </script>
+
 </body>
 </html>

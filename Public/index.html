@@ -310,5 +310,50 @@
             document.head.appendChild(style);
         });
     </script>
+    <script>
+        function validateAdmin() {
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value.trim();
+    const errorMsg = document.getElementById('errorMessage');
+    const fillMsg = document.getElementById('fillMessage');
+    const loginBtn = document.querySelector('.login-btn');
+    
+    // Hide previous messages
+    errorMsg.style.display = 'none';
+    fillMsg.style.display = 'none';
+    
+    // Validate inputs
+    if (!email || !password) {
+        fillMsg.style.display = 'block';
+        shakeModal();
+        return;
+    }
+    
+    // Use auth system
+    if (window.authSystem && window.authSystem.login(email, password)) {
+        // Show success
+        loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
+        loginBtn.style.background = 'var(--accent)';
+        loginBtn.disabled = true;
+        
+        // The redirect happens in authSystem.login()
+    } else {
+        // Show error
+        errorMsg.style.display = 'block';
+        shakeModal();
+        
+        // Add error effect to inputs
+        const inputs = document.querySelectorAll('.modal input');
+        inputs.forEach(input => {
+            input.style.borderColor = '#ff4757';
+            input.style.animation = 'shake 0.5s ease';
+            
+            setTimeout(() => {
+                input.style.animation = '';
+            }, 500);
+        });
+    }
+}
+    </script>
 </body>
 </html>
