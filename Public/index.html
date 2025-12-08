@@ -6,6 +6,7 @@
     <title>Sunrise Real Estate | Find Your Dream Property</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+        <script src="auth-check.js"></script>
     <link rel="stylesheet" href="CSS files/index.css">
 </head>
 <body>
@@ -333,6 +334,64 @@
             `;
             document.head.appendChild(style);
         });
+        
+        // Update your validateAdmin function to use the auth system
+function validateAdmin() {
+    const email = document.getElementById('adminEmail').value.trim();
+    const password = document.getElementById('adminPassword').value.trim();
+    const correctEmail = "ayush10@gmail.com";
+    const correctPassword = "9788";
+    const errorMsg = document.getElementById('errorMessage');
+    const fillMsg = document.getElementById('fillMessage');
+    const loginBtn = document.querySelector('.login-btn');
+    
+    // Hide previous messages
+    errorMsg.style.display = 'none';
+    fillMsg.style.display = 'none';
+    
+    // Validate inputs
+    if (!email || !password) {
+        fillMsg.style.display = 'block';
+        shakeModal();
+        return;
+    }
+    
+    if (email === correctEmail && password === correctPassword) {
+        // Success animation
+        loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
+        loginBtn.style.background = 'var(--accent)';
+        
+        // Simulate loading
+        setTimeout(() => {
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
+            
+            // Use the auth system to set authentication
+            setTimeout(() => {
+                if (typeof authSystem !== 'undefined') {
+                    authSystem.setAuthentication(email);
+                } else {
+                    // Fallback: redirect to Admin.html
+                    window.location.href = "Admin.html";
+                }
+            }, 1000);
+        }, 500);
+    } else {
+        // Show error
+        errorMsg.style.display = 'block';
+        shakeModal();
+        
+        // Add error effect to inputs
+        const inputs = document.querySelectorAll('.modal input');
+        inputs.forEach(input => {
+            input.style.borderColor = '#ff4757';
+            input.style.animation = 'shake 0.5s ease';
+            
+            setTimeout(() => {
+                input.style.animation = '';
+            }, 500);
+        });
+    }
+}
     </script>
 </body>
 </html>
