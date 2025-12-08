@@ -1,6 +1,6 @@
 /**
- * Authentication Check System - RESTRICTED VERSION
- * Blocks direct access to Admin.html, SearchDetails.html, and Details.html
+ * Authentication Check System
+ * Protects specific pages from direct access
  */
 
 // ONLY these 3 pages are restricted
@@ -10,179 +10,56 @@ const RESTRICTED_PAGES = [
     "Details.html"
 ];
 
-// Hardcoded admin credentials (in production, use server-side validation)
-const ADMIN_CREDENTIALS = {
-    email: "ayush10@gmail.com",
-    password: "9788"
-};
-
-// ==================== CORE AUTH FUNCTIONS ====================
-
 // Check if current page is restricted
 function isPageRestricted() {
     const currentPath = window.location.pathname;
-    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1);
+    const currentPage = currentPath.split('/').pop();
     
-    console.log("Checking page:", currentPage);
-    console.log("Restricted pages:", RESTRICTED_PAGES);
+    // Debug: Log the current page (remove in production)
+    console.log("Current page:", currentPage);
+    console.log("Is restricted?", RESTRICTED_PAGES.includes(currentPage));
     
     return RESTRICTED_PAGES.includes(currentPage);
 }
 
-// Check if user is authenticated
+// Check if user is authenticated (using your existing login system)
 function isAuthenticated() {
-    const authToken = sessionStorage.getItem('adminAuthToken');
-    const authEmail = sessionStorage.getItem('adminEmail');
-    const authTime = sessionStorage.getItem('authTime');
+    // Check if admin is logged in (from your existing login system)
+    const adminEmail = localStorage.getItem('adminEmail');
+    const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
     
-    // Check if token exists
-    if (!authToken || !authEmail) {
-        console.log("No auth token found");
-        return false;
-    }
-    
-    // Check token validity (2 hour expiry)
-    if (authTime) {
-        const currentTime = new Date().getTime();
-        const loginTime = parseInt(authTime);
-        const expiryTime = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-        
-        if (currentTime - loginTime > expiryTime) {
-            console.log("Token expired");
-            clearAuth();
-            return false;
-        }
-    }
-    
-    // Verify token matches expected format
-    const expectedToken = generateToken(authEmail);
-    if (authToken !== expectedToken) {
-        console.log("Invalid token");
-        clearAuth();
-        return false;
-    }
-    
-    console.log("User authenticated:", authEmail);
-    return true;
-}
-
-// Generate secure token
-function generateToken(email) {
-    return btoa(email + "|" + ADMIN_CREDENTIALS.password + "|" + Date.now()).replace(/=/g, '');
-}
-
-// Set authentication after successful login
-function setAuthentication(email) {
-    const token = generateToken(email);
-    const authTime = new Date().getTime();
-    
-    sessionStorage.setItem('adminAuthToken', token);
-    sessionStorage.setItem('adminEmail', email);
-    sessionStorage.setItem('authTime', authTime.toString());
-    sessionStorage.setItem('adminLoggedIn', 'true');
-    
-    console.log("Authentication set for:", email);
-}
-
-// Clear authentication (logout)
-function clearAuth() {
-    sessionStorage.removeItem('adminAuthToken');
-    sessionStorage.removeItem('adminEmail');
-    sessionStorage.removeItem('authTime');
-    sessionStorage.removeItem('adminLoggedIn');
-    sessionStorage.removeItem('redirectAfterLogin');
-    
-    console.log("Authentication cleared");
-}
-
-// Validate login credentials
-function validateLogin(email, password) {
-    return email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password;
+    return adminLoggedIn && adminEmail === "ayush10@gmail.com";
 }
 
 // Redirect to login page
 function redirectToLogin() {
-    // Store current page for redirect after login
-    const currentPage = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-    sessionStorage.setItem('redirectAfterLogin', currentPage);
+    // Store the page they tried to access
+    const currentPage = window.location.pathname.split('/').pop();
+    localStorage.setItem('redirectAfterLogin', currentPage);
     
-    // Force redirect to index.html (which has login modal)
+    // Redirect to your index.html (which has the admin login modal)
     window.location.href = "index.html";
-    
-    // Prevent any further execution on current page
-    throw new Error("Redirecting to login");
 }
 
-// ==================== PAGE PROTECTION ====================
-
-// Main protection function - CALL THIS ON EVERY RESTRICTED PAGE
+// Check and protect pages on load
 function protectPage() {
-    console.log("Protecting page...");
-    console.log("Page restricted:", isPageRestricted());
-    console.log("Authenticated:", isAuthenticated());
-    
     if (isPageRestricted() && !isAuthenticated()) {
-        console.log("Access denied! Redirecting to login...");
+        console.log("Page is restricted and user is not authenticated. Redirecting...");
         redirectToLogin();
-        return false; // Page should not load
     }
-    
-    console.log("Access granted!");
-    return true; // Page can load
 }
 
-// ==================== EVENT HANDLERS ====================
-
-// Run protection when page loads
+// Auto-check authentication when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM Content Loaded - Checking authentication");
+    protectPage();
     
-    if (!protectPage()) {
-        // If protection fails, stop everything
-        document.body.innerHTML = `
-            <div style="
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 20px;
-            ">
-                <div>
-                    <h1 style="font-size: 2.5em; margin-bottom: 20px;">
-                        <i class="fas fa-lock" style="color: #ff6b6b;"></i>
-                        Access Restricted
-                    </h1>
-                    <p style="font-size: 1.2em; margin-bottom: 30px;">
-                        Redirecting to login page...
-                    </p>
-                    <div style="font-size: 3em;">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
-                    <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.8;">
-                        If redirection doesn't work, <a href="index.html" style="color: #ffd166;">click here</a>
-                    </p>
-                </div>
-            </div>
-        `;
-        
-        // Force redirect after 3 seconds
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 3000);
-    } else {
-        // If authenticated, add logout button and session timer
+    // If authenticated and on restricted page, add logout button
+    if (isAuthenticated() && isPageRestricted()) {
         addLogoutButton();
-        startSessionTimer();
     }
 });
 
-// ==================== UI FUNCTIONS ====================
-
-// Add logout button to authenticated pages
+// Add logout button to protected pages
 function addLogoutButton() {
     // Check if logout button already exists
     if (document.getElementById('auth-logout-btn')) return;
@@ -222,7 +99,12 @@ function addLogoutButton() {
     
     logoutBtn.onclick = function() {
         if (confirm('Are you sure you want to logout from the admin session?')) {
-            clearAuth();
+            // Clear authentication
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            localStorage.removeItem('redirectAfterLogin');
+            
+            // Redirect to home page
             window.location.href = "index.html";
         }
     };
@@ -230,53 +112,51 @@ function addLogoutButton() {
     document.body.appendChild(logoutBtn);
 }
 
-// Session timer to show remaining time
-function startSessionTimer() {
-    const authTime = sessionStorage.getItem('authTime');
-    if (!authTime) return;
+// Function to set authentication (call this after successful login)
+function setAuthentication(email) {
+    localStorage.setItem('adminLoggedIn', 'true');
+    localStorage.setItem('adminEmail', email);
+    localStorage.setItem('adminLoginTime', new Date().getTime());
     
-    const updateTimer = () => {
-        const currentTime = new Date().getTime();
-        const loginTime = parseInt(authTime);
-        const expiryTime = 2 * 60 * 60 * 1000; // 2 hours
-        const remainingTime = expiryTime - (currentTime - loginTime);
-        
-        if (remainingTime <= 0) {
-            clearAuth();
-            window.location.href = "index.html";
-            return;
-        }
-        
-        // Update logout button with time remaining (optional)
-        const logoutBtn = document.getElementById('auth-logout-btn');
-        if (logoutBtn) {
-            const minutes = Math.floor(remainingTime / 60000);
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            
-            if (minutes < 15) {
-                logoutBtn.innerHTML = `<i class="fas fa-clock" style="color: #ffd166;"></i> ${mins}m`;
-                logoutBtn.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
-            }
-        }
-    };
-    
-    // Update every minute
-    setInterval(updateTimer, 60000);
-    updateTimer(); // Initial call
+    // Check if there's a redirect URL stored
+    const redirectTo = localStorage.getItem('redirectAfterLogin');
+    if (redirectTo && RESTRICTED_PAGES.includes(redirectTo)) {
+        localStorage.removeItem('redirectAfterLogin');
+        window.location.href = redirectTo;
+    } else {
+        window.location.href = "Admin.html"; // Default redirect
+    }
 }
 
-// ==================== EXPORT FUNCTIONS ====================
+// Function to clear authentication
+function clearAuthentication() {
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('adminEmail');
+    localStorage.removeItem('adminLoginTime');
+    localStorage.removeItem('redirectAfterLogin');
+}
 
-// Make functions available globally
+// Auto-logout after 2 hours
+setTimeout(function() {
+    if (isAuthenticated()) {
+        const loginTime = localStorage.getItem('adminLoginTime');
+        const currentTime = new Date().getTime();
+        const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+        
+        if (currentTime - loginTime > twoHours) {
+            clearAuthentication();
+            if (isPageRestricted()) {
+                redirectToLogin();
+            }
+        }
+    }
+}, 60000); // Check every minute
+
+// Export functions for use in other files
 window.authSystem = {
     isAuthenticated,
     setAuthentication,
-    clearAuth,
-    validateLogin,
+    clearAuthentication,
     protectPage,
     isPageRestricted
 };
-
-// Console warning for developers
-console.log("🔒 Auth System Loaded - Protecting:", RESTRICTED_PAGES);
