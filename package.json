@@ -14,7 +14,7 @@
   "version": "1.0.0",
   "main": "Connection.js",
   "scripts": {
-    "start":"nodemon server.js"
+    "start":"nodem server.js"
   },
   "keywords": [],
   "author": "",
