@@ -105,6 +105,58 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// AUTO CREATE TABLES ON STARTUP
+const createTables = () => {
+  console.log('🔧 Checking/Creating database tables...');
+  
+  const tables = [
+    `CREATE TABLE IF NOT EXISTS \`sign-up\` (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      address TEXT,
+      contact VARCHAR(20),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    
+    `CREATE TABLE IF NOT EXISTS customer_details (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) NOT NULL,
+      number VARCHAR(20),
+      query TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    
+    `CREATE TABLE IF NOT EXISTS search (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      property VARCHAR(50),
+      location VARCHAR(100),
+      price VARCHAR(50),
+      rooms VARCHAR(20),
+      bathroom VARCHAR(20),
+      area VARCHAR(50),
+      pstatus VARCHAR(50),
+      sort VARCHAR(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`
+  ];
+
+  tables.forEach((sql, i) => {
+    pool.query(sql, (err, result) => {
+      if (err) {
+        console.error(`❌ Table ${i+1} error:`, err.message);
+      } else {
+        console.log(`✅ Table ${i+1} ready`);
+      }
+    });
+  });
+};
+
+// Server start pe call karo
+createTables();
+
 // ==================== DATABASE TABLES CHECK ====================
 app.get("/api/check-tables", (req, res) => {
   const sql = "SHOW TABLES";
