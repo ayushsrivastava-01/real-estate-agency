@@ -3,237 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Analytics - Admin</title>
-    <link rel="stylesheet" href="CSS files/Details.css">
-        <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Search Analytics - Admin Panel</title>
+    <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
+    <link rel="stylesheet" href="CSS files/SearchDetails.css">
 </head>
 <body>
-    <div class="container-fluid">
+    <div class="admin-container">
         <div class="header">
-            <button onclick="window.location.href='Admin.html'" class="back-btn">
+            <h1><i class="fas fa-search"></i> Property Search Analytics</h1>
+            <a href="Admin.html" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Admin Panel
+            </a>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total Searches</h3>
+                <p class="stat-number" id="totalSearches">0</p>
+                <p><i class="fas fa-chart-line"></i> All property searches</p>
+            </div>
+            <div class="stat-card">
+                <h3>Most Searched Type</h3>
+                <p class="stat-number" id="mostSearchedType">-</p>
+                <p><i class="fas fa-home"></i> Popular property type</p>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Searches</h3>
+                <p class="stat-number" id="todaySearches">0</p>
+                <p><i class="fas fa-calendar-day"></i> Searches today</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Budget</h3>
+                <p class="stat-number" id="avgBudget">-</p>
+                <p><i class="fas fa-money-bill-wave"></i> Average search budget</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="filter-container">
+                <button class="refresh-btn" onclick="loadSearchData()">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+                <button class="export-btn" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
+                <select id="propertyFilter" class="filter-select" onchange="filterTable()">
+                    <option value="">All Property Types</option>
+                    <option value="House">House</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Flat">Flat</option>
+                    <option value="Shop">Shop</option>
+                    <option value="Office">Office</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="statusFilter" class="filter-select" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="sale">For Sale</option>
+                    <option value="rent">For Rent</option>
+                    <option value="completef">Complete (Furnished)</option>
+                    <option value="complete">Complete</option>
+                    <option value="under-construction">Under Construction</option>
+                </select>
+            </div>
+            <div style="color: #666; font-size: 14px;">
+                <i class="fas fa-info-circle"></i> Last updated: <span id="lastUpdated">Never</span>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading search analytics from database...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Data</h3>
+            <p id="errorMessage">Unable to connect to the server. Please check your internet connection.</p>
+            <button onclick="loadSearchData()" style="margin-top: 15px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-redo"></i> Try Again
             </button>
-            <h1>🔍 Property Search Analytics</h1>
         </div>
         
-        <!-- Statistics Cards -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3>Total Searches</h3>
-                    <p id="totalSearches" class="stat-number">0</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <h3>Most Searched Type</h3>
-                    <p id="mostSearchedType" class="stat-number">-</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <h3>Average Budget</h3>
-                    <p id="avgBudget" class="stat-number">-</p>
-                </div>
-            </div>
+        <div id="noData" class="no-data" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No Search Data Found</h3>
+            <p>No property searches have been recorded yet.</p>
+            <p style="margin-top: 10px; font-size: 14px; color: #999;">Check back after users search for properties.</p>
         </div>
         
-        <!-- Search Data Table -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h3><i class="fas fa-table"></i> Recent Searches</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover" id="searchTable">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Date & Time</th>
-                                <th>Property Type</th>
-                                <th>Location</th>
-                                <th>Budget</th>
-                                <th>Bedrooms</th>
-                                <th>Area</th>
-                                <th>Status</th>
-                                <th>Sort By</th>
-                            </tr>
-                        </thead>
-                        <tbody id="searchTableBody">
-                            <!-- Data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Chart Section -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h3><i class="fas fa-chart-bar"></i> Search Distribution by Property Type</h3>
-            </div>
-            <div class="card-body">
-                <canvas id="searchChart"></canvas>
-            </div>
-        </div>
-        
-        <!-- Export Button -->
-        <div class="mt-4 mb-4 text-center">
-            <button onclick="exportToExcel()" class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Export to Excel
-            </button>
-            <button onclick="refreshData()" class="btn btn-primary ms-2">
-                <i class="fas fa-sync-alt"></i> Refresh Data
-            </button>
+        <div class="data-container">
+            <table id="searchTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Property Type</th>
+                        <th>Location</th>
+                        <th>Budget</th>
+                        <th>Bedrooms</th>
+                        <th>Area</th>
+                        <th>Status</th>
+                        <th>Sort By</th>
+                        <th>Bathrooms</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="searchTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
         </div>
     </div>
-    
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    
+
     <script>
-        let searchChart;
+        let searchData = [];
+        let filteredData = [];
+        let lastUpdateTime = null;
         
-        // Load data on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSearchData();
-            loadStatistics();
-        });
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadSearchData);
         
-        function loadSearchData() {
-            fetch('http://localhost:1000/search_data')
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('searchTableBody');
-                    tableBody.innerHTML = '';
-                    
-                    data.forEach(search => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${new Date(search.created_at || search.timestamp).toLocaleString()}</td>
-                            <td><span class="badge bg-primary">${search.property}</span></td>
-                            <td>${search.location}</td>
-                            <td><span class="badge bg-success">${search.price}</span></td>
-                            <td>${search.rooms}</td>
-                            <td>${search.area}</td>
-                            <td><span class="badge bg-info">${search.pstatus}</span></td>
-                            <td>${search.sort}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                    
-                    createChart(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('searchTableBody').innerHTML = `
-                        <tr>
-                            <td colspan="8" class="text-center text-danger">
-                                <i class="fas fa-exclamation-triangle"></i> Error loading data
-                            </td>
-                        </tr>
-                    `;
-                });
-        }
-        
-        function loadStatistics() {
-            fetch('http://localhost:1000/search_stats')
-                .then(response => response.json())
-                .then(stats => {
-                    document.getElementById('totalSearches').textContent = stats.totalSearches;
-                    document.getElementById('mostSearchedType').textContent = stats.mostSearchedType;
-                    document.getElementById('avgBudget').textContent = stats.avgBudget;
-                })
-                .catch(error => {
-                    console.error('Error fetching statistics:', error);
-                });
-        }
-        
-        function createChart(data) {
-            const ctx = document.getElementById('searchChart').getContext('2d');
+        async function loadSearchData() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const noData = document.getElementById('noData');
+            const table = document.getElementById('searchTable');
             
-            // Destroy existing chart if exists
-            if (searchChart) {
-                searchChart.destroy();
-            }
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            noData.style.display = 'none';
+            table.style.display = 'none';
             
-            // Group data by property type
-            const propertyTypes = ['House', 'Apartment', 'Villa', 'Flat', 'Shop', 'Office', 'Other'];
-            const counts = propertyTypes.map(type => 
-                data.filter(item => item.property === type).length
-            );
-            
-            // Filter out zero counts for better visualization
-            const filteredTypes = propertyTypes.filter((type, index) => counts[index] > 0);
-            const filteredCounts = counts.filter(count => count > 0);
-            
-            searchChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: filteredTypes,
-                    datasets: [{
-                        data: filteredCounts,
-                        backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                            '#9966FF', '#FF9F40', '#C9CBCF'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Property Type Distribution',
-                            font: {
-                                size: 16
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${value} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
+            try {
+                console.log('Fetching search data from backend...');
+                
+                // Fetch data from YOUR backend API - Change this URL to match your backend
+                const response = await fetch('https://real-estate-agency-sxsd.onrender.com/searches');
+                
+                if (!response.ok) {
+                    throw new Error(`Server error! Status: ${response.status}`);
                 }
+                
+                const data = await response.json();
+                console.log('Search data received:', data);
+                
+                loading.style.display = 'none';
+                lastUpdateTime = new Date();
+                document.getElementById('lastUpdated').textContent = lastUpdateTime.toLocaleTimeString();
+                
+                if (!data || data.length === 0) {
+                    noData.style.display = 'block';
+                    searchData = [];
+                    filteredData = [];
+                    updateSearchStats([]);
+                    return;
+                }
+                
+                searchData = data;
+                filteredData = [...data];
+                
+                // Update statistics
+                updateSearchStats(data);
+                
+                // Populate table
+                populateTable(data);
+                
+                table.style.display = 'table';
+                
+            } catch (err) {
+                console.error('Error loading search data:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                document.getElementById('errorMessage').textContent = err.message || 'Unknown error occurred';
+            }
+        }
+        
+        function populateTable(data) {
+            const tableBody = document.getElementById('searchTableBody');
+            tableBody.innerHTML = '';
+            
+            data.forEach((search, index) => {
+                const row = document.createElement('tr');
+                
+                // Format date
+                const date = new Date(search.created_at || search.timestamp || search.search_date || Date.now());
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // Get property type
+                const propertyType = search.property || search.property_type || 'N/A';
+                
+                // Get status and badge class
+                const status = search.pstatus || search.property_status || 'N/A';
+                let badgeClass = 'badge-primary';
+                let statusText = status;
+                
+                if (status.includes('sale')) {
+                    badgeClass = 'badge-success';
+                    statusText = 'For Sale';
+                } else if (status.includes('rent')) {
+                    badgeClass = 'badge-warning';
+                    statusText = 'For Rent';
+                } else if (status.includes('complete')) {
+                    badgeClass = 'badge-info';
+                    statusText = 'Complete';
+                } else if (status.includes('under')) {
+                    badgeClass = 'badge-danger';
+                    statusText = 'Under Construction';
+                }
+                
+                row.innerHTML = `
+                    <td>${search.id || index + 1}</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="badge badge-primary">${propertyType}</span></td>
+                    <td>${search.location || 'N/A'}</td>
+                    <td><span class="badge badge-success">${search.price || search.budget || 'N/A'}</span></td>
+                    <td>${search.rooms || search.bedrooms || 'N/A'}</td>
+                    <td>${search.area || 'N/A'}</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                    <td>${search.sort || search.sort_by || 'N/A'}</td>
+                    <td>${search.bathroom || 'N/A'}</td>
+                    <td>
+                        <button onclick="viewSearchDetails(${index})" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
             });
         }
         
-        function exportToExcel() {
-            const table = document.getElementById('searchTable');
-            const ws = XLSX.utils.table_to_sheet(table);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Search Data");
-            XLSX.writeFile(wb, "Search_Analytics.xlsx");
+        function filterTable() {
+            const propertyFilter = document.getElementById('propertyFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            filteredData = searchData.filter(search => {
+                const propertyType = (search.property || search.property_type || '').toLowerCase();
+                const status = (search.pstatus || search.property_status || '').toLowerCase();
+                
+                const matchesProperty = !propertyFilter || propertyType.includes(propertyFilter.toLowerCase());
+                const matchesStatus = !statusFilter || status.includes(statusFilter.toLowerCase());
+                
+                return matchesProperty && matchesStatus;
+            });
+            
+            populateTable(filteredData);
+            updateSearchStats(filteredData);
         }
         
-        function refreshData() {
-            loadSearchData();
-            loadStatistics();
-            alert('Data refreshed successfully!');
+        function updateSearchStats(data) {
+            const totalSearches = data.length;
+            
+            // Most searched property type
+            const typeCount = {};
+            data.forEach(search => {
+                const type = search.property || search.property_type || 'Unknown';
+                typeCount[type] = (typeCount[type] || 0) + 1;
+            });
+            
+            let mostSearchedType = '-';
+            let maxCount = 0;
+            for (const [type, count] of Object.entries(typeCount)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    mostSearchedType = type;
+                }
+            }
+            
+            // Today's searches
+            const today = new Date().toDateString();
+            const todaySearches = data.filter(s => {
+                const searchDate = new Date(s.created_at || s.timestamp || s.search_date).toDateString();
+                return searchDate === today;
+            }).length;
+            
+            // Average budget (simple calculation)
+            const budgets = data.map(s => {
+                const budget = s.price || s.budget || '';
+                if (budget.includes('crore')) return 100;
+                if (budget.includes('lakh')) return parseInt(budget) || 5;
+                return 1;
+            });
+            const avgBudget = budgets.length > 0 
+                ? Math.round(budgets.reduce((a, b) => a + b, 0) / budgets.length)
+                : 0;
+            
+            document.getElementById('totalSearches').textContent = totalSearches;
+            document.getElementById('mostSearchedType').textContent = mostSearchedType;
+            document.getElementById('todaySearches').textContent = todaySearches;
+            document.getElementById('avgBudget').textContent = avgBudget > 0 ? `₹${avgBudget} Lakh` : '-';
         }
+        
+        function viewSearchDetails(index) {
+            const search = filteredData[index];
+            if (search) {
+                const details = `
+SEARCH DETAILS:
+----------------
+ID: ${search.id || 'N/A'}
+Date: ${new Date(search.created_at || search.timestamp || search.search_date).toLocaleString()}
+Property Type: ${search.property || search.property_type || 'N/A'}
+Location: ${search.location || 'N/A'}
+Budget: ${search.price || search.budget || 'N/A'}
+Bedrooms: ${search.rooms || search.bedrooms || 'N/A'}
+Bathrooms: ${search.bathroom || 'N/A'}
+Area: ${search.area || 'N/A'}
+Property Status: ${search.pstatus || search.property_status || 'N/A'}
+Sort By: ${search.sort || search.sort_by || 'N/A'}
+
+RAW DATA:
+${JSON.stringify(search, null, 2)}
+                `;
+                alert(details);
+            }
+        }
+        
+        function exportToExcel() {
+            if (filteredData.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            let csv = 'ID,Date,Property Type,Location,Budget,Bedrooms,Area,Status,Sort By,Bathrooms\n';
+            
+            filteredData.forEach(search => {
+                const date = new Date(search.created_at || search.timestamp || search.search_date).toLocaleString();
+                const propertyType = search.property || search.property_type || '';
+                const status = search.pstatus || search.property_status || '';
+                
+                csv += `"${search.id || ''}","${date}","${propertyType}","${search.location || ''}","${search.price || search.budget || ''}","${search.rooms || search.bedrooms || ''}","${search.area || ''}","${status}","${search.sort || search.sort_by || ''}","${search.bathroom || ''}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `search_analytics_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Exported ${filteredData.length} searches to CSV file!`);
+        }
+        
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            if (!document.hidden) { // Only refresh if tab is visible
+                loadSearchData();
+            }
+        }, 60000);
     </script>
 </body>
 </html>

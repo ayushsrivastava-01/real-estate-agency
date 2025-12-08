@@ -3,47 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users List</title>
+    <title>Customer Contacts - Admin Panel</title>
     <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
-    <link rel="stylesheet" href="CSS files/Details.css"></head>
+    <link rel="stylesheet" href="CSS files/Details.css">
+</head>
 <body>
-    <h1>Customers List</h1>
-    <table id="usersTable">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Query</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- table data will be displayed here-->
-        </tbody>
-    </table>
+    <div class="admin-container">
+        <div class="header">
+            <h1><i class="fas fa-users"></i> Customer Contacts Management</h1>
+            <a href="Admin.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Admin Panel
+            </a>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total Contacts</h3>
+                <p class="stat-number" id="totalContacts">0</p>
+                <p><i class="fas fa-user-plus"></i> All customer inquiries</p>
+            </div>
+            <div class="stat-card">
+                <h3>New Messages</h3>
+                <p class="stat-number" id="newMessages">0</p>
+                <p><i class="fas fa-envelope"></i> Waiting for response</p>
+            </div>
+            <div class="stat-card">
+                <h3>Today's Contacts</h3>
+                <p class="stat-number" id="todayContacts">0</p>
+                <p><i class="fas fa-calendar-day"></i> Received today</p>
+            </div>
+            <div class="stat-card">
+                <h3>Response Rate</h3>
+                <p class="stat-number" id="responseRate">0%</p>
+                <p><i class="fas fa-chart-line"></i> Contacts responded</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="loadCustomerData()">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+            <button class="export-btn" onclick="exportToExcel()">
+                <i class="fas fa-file-excel"></i> Export to Excel
+            </button>
+            <div style="color: #666; font-size: 14px;">
+                <i class="fas fa-info-circle"></i> Last updated: <span id="lastUpdated">Never</span>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading customer data from database...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Data</h3>
+            <p id="errorMessage">Unable to connect to the server. Please check your internet connection.</p>
+            <button onclick="loadCustomerData()" style="margin-top: 15px; padding: 10px 20px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+        </div>
+        
+        <div id="noData" class="no-data" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>No Customer Contacts Found</h3>
+            <p>No contact forms have been submitted yet.</p>
+            <p style="margin-top: 10px; font-size: 14px; color: #999;">Check back later or test the contact form.</p>
+        </div>
+        
+        <div class="data-container">
+            <table id="customersTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
-        // Fetch users data from the back-end
-fetch('http://localhost:1000/customer_details')
-    .then(response => response.json())
-    .then(data => {
-        const tableBody = document.querySelector('#usersTable tbody');
+        let customerData = [];
+        let lastUpdateTime = null;
+        
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadCustomerData);
+        
+        async function loadCustomerData() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const noData = document.getElementById('noData');
+            const table = document.getElementById('customersTable');
+            
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            noData.style.display = 'none';
+            table.style.display = 'none';
+            
+            try {
+                console.log('Fetching customer data from backend...');
+                
+                // Fetch data from YOUR backend API - Change this URL to match your backend
+                const response = await fetch('https://real-estate-agency-sxsd.onrender.com/contacts');
+                
+                if (!response.ok) {
+                    throw new Error(`Server error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data received:', data);
+                
+                loading.style.display = 'none';
+                lastUpdateTime = new Date();
+                document.getElementById('lastUpdated').textContent = lastUpdateTime.toLocaleTimeString();
+                
+                if (!data || data.length === 0) {
+                    noData.style.display = 'block';
+                    customerData = [];
+                    updateStats([]);
+                    return;
+                }
+                
+                customerData = data;
+                
+                // Update statistics
+                updateStats(data);
+                
+                // Populate table
+                const tableBody = document.getElementById('customersTableBody');
+                tableBody.innerHTML = '';
+                
+                data.forEach((customer, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Format date
+                    const date = new Date(customer.created_at || customer.timestamp || Date.now());
+                    const formattedDate = date.toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Get status
+                    const status = customer.status || 'new';
+                    const statusClass = `status-${status}`;
+                    const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+                    
+                    row.innerHTML = `
+                        <td>${customer.id || index + 1}</td>
+                        <td><strong>${customer.name || 'N/A'}</strong></td>
+                        <td><a href="mailto:${customer.email}" style="color: #2196F3; text-decoration: none;">${customer.email}</a></td>
+                        <td><a href="tel:${customer.phone || customer.number}" style="color: #4CAF50; text-decoration: none;">
+                            <i class="fas fa-phone" style="margin-right: 5px;"></i>${customer.phone || customer.number || 'N/A'}
+                        </a></td>
+                        <td class="message-cell" title="${customer.message || customer.query || ''}">
+                            ${(customer.message || customer.query || '').substring(0, 50)}...
+                        </td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <button onclick="viewContact(${index})" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button onclick="markAsContacted(${index})" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-check"></i> Contacted
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                table.style.display = 'table';
+                
+            } catch (err) {
+                console.error('Error loading customer data:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                document.getElementById('errorMessage').textContent = err.message || 'Unknown error occurred';
+            }
+        }
+        
+        function updateStats(data) {
+            const totalContacts = data.length;
+            const newMessages = data.filter(c => (c.status || 'new') === 'new').length;
+            
+            // Count today's contacts
+            const today = new Date().toDateString();
+            const todayContacts = data.filter(c => {
+                const contactDate = new Date(c.created_at || c.timestamp).toDateString();
+                return contactDate === today;
+            }).length;
+            
+            // Calculate response rate
+            const contactedMessages = data.filter(c => (c.status || 'new') === 'contacted' || (c.status || 'new') === 'resolved').length;
+            const responseRate = totalContacts > 0 ? Math.round((contactedMessages / totalContacts) * 100) : 0;
+            
+            document.getElementById('totalContacts').textContent = totalContacts;
+            document.getElementById('newMessages').textContent = newMessages;
+            document.getElementById('todayContacts').textContent = todayContacts;
+            document.getElementById('responseRate').textContent = responseRate + '%';
+        }
+        
+        function viewContact(index) {
+            const customer = customerData[index];
+            if (customer) {
+                const message = customer.message || customer.query || 'No message';
+                const details = `
+Name: ${customer.name}
+Email: ${customer.email}
+Phone: ${customer.phone || customer.number}
+Date: ${new Date(customer.created_at || customer.timestamp).toLocaleString()}
+Status: ${customer.status || 'new'}
 
-        data.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${user.name}</td>
-                <td>${user.email}</td>
-                <td>${user.number}</td>
-                <td>${user.query}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-    });
-
+Message:
+${message}
+                `;
+                alert(details);
+            }
+        }
+        
+        function markAsContacted(index) {
+            if (confirm('Mark this contact as contacted?')) {
+                // In a real app, you would send this to your backend
+                alert('Contact marked as contacted! (In a real app, this would update the database)');
+                // For demo, just update local data
+                if (customerData[index]) {
+                    customerData[index].status = 'contacted';
+                    loadCustomerData(); // Refresh to show updated status
+                }
+            }
+        }
+        
+        function exportToExcel() {
+            if (customerData.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            let csv = 'ID,Name,Email,Phone,Message,Status,Date\n';
+            
+            customerData.forEach(customer => {
+                const date = new Date(customer.created_at || customer.timestamp).toLocaleString();
+                const message = (customer.message || customer.query || '').replace(/"/g, '""');
+                
+                csv += `"${customer.id || ''}","${customer.name || ''}","${customer.email || ''}","${customer.phone || customer.number || ''}","${message}","${customer.status || 'new'}","${date}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `customer_contacts_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Exported ${customerData.length} contacts to CSV file!`);
+        }
+        
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            if (!document.hidden) { // Only refresh if tab is visible
+                loadCustomerData();
+            }
+        }, 60000);
     </script>
 </body>
 </html>
