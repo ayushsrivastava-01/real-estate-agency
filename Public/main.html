@@ -35,11 +35,9 @@
        <li><a href="Search.html">Search</a></li>
        <li><a href="#buy-sell">Buy/Sell</a></li>
        <li><a href="Cart.html">&#x1F6D2 Wishlist</a></li>
-       <!-- <li><a href="" onclick="openModal()">Login/SignUp</a></li>  onclick="openDialog(true)"       -->
     </ul>
  </nav>
- <!-- </div> -->
-  <br id="home">
+ <br id="home">
         
     <!-- Theme toggle button -->
     <div id="theme-toggle" class="theme-toggle">
@@ -411,46 +409,6 @@
     <p>Conditions of Use Privacy Notice Your Ads Privacy Choices<br>&#169; 2004-2024, sunriserea.com, Inc. or its affiliates</p>
 </div>
 
-
-<!-- 
-<script>
-  function openModal() {
-  document.getElementById('modal').style.display = 'block';
-}
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-}
-
-function login() {
-  alert('Login functionality is not implemented...');
-
-}
-
-function showSignup() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('signup-form').style.display = 'block';
-}
-
-function showLogin() {
-  document.getElementById('signup-form').style.display = 'none';
-  document.getElementById('login-form').style.display = 'block';
-}
-
-document.querySelector('nav ul li:last-child a').onclick = function(event) {
-  event.preventDefault();
-  openModal(); 
-};
-
-window.onclick = function(event) {
-  const modal = document.getElementById('modal');
-  if (event.target === modal) {
-      closeModal();
-  }
-};
-
-</script> -->
-
       <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
       <script>  
@@ -499,34 +457,72 @@ themeToggle.onclick = function() {
 
 </script>
 
-<!-- add to cart script-->
-
-  <script>
-function addToWishlist(houseClass) {
-    const card = document.querySelector(houseClass);
-    const cardHTML = card.outerHTML;
-
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
-    wishlist.push(cardHTML);
-
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-
+<!-- Add to wishlist script - UPDATED -->
+<script>
+// Function to add property to wishlist
+function addToWishlist(propertyId, event) {
+    // Prevent page navigation if heart icon is in a link
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
-    alert("Item added to wishlist!");
-
-    // window.location.href = 'Cart.html';
+    // Get current wishlist from localStorage
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    
+    // Check if property is already in wishlist
+    if (wishlist.includes(propertyId)) {
+        alert("This property is already in your wishlist!");
+        return;
+    }
+    
+    // Add property ID to wishlist
+    wishlist.push(propertyId);
+    
+    // Save back to localStorage
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    
+    // Change heart color to indicate it's in wishlist
+    const heartIcon = event.target;
+    heartIcon.style.color = '#ff416c';
+    
+    alert("✓ Added to wishlist!");
 }
 
+// Initialize wishlist hearts on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Get current wishlist
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    
+    // Update heart icons for properties already in wishlist
+    wishlist.forEach(propertyId => {
+        const heartIcon = document.querySelector(`.heart-${propertyId}`);
+        if (heartIcon) {
+            heartIcon.style.color = '#ff416c';
+        }
+    });
+});
 
-document.getElementById('add').addEventListener('click', function() { addToWishlist('.house'); });
-document.getElementById('add1').addEventListener('click', function() { addToWishlist('.house1'); });
-document.getElementById('add2').addEventListener('click', function() { addToWishlist('.house2'); });
-document.getElementById('add3').addEventListener('click', function() { addToWishlist('.house3'); });
-document.getElementById('add4').addEventListener('click', function() { addToWishlist('.house4'); });
-document.getElementById('add5').addEventListener('click', function() { addToWishlist('.house5'); });
+// Add click events to all heart icons
+document.getElementById('add').addEventListener('click', function(event) { 
+    addToWishlist(1, event);
+});
+document.getElementById('add1').addEventListener('click', function(event) { 
+    addToWishlist(2, event);
+});
+document.getElementById('add2').addEventListener('click', function(event) { 
+    addToWishlist(3, event);
+});
+document.getElementById('add3').addEventListener('click', function(event) { 
+    addToWishlist(4, event);
+});
+document.getElementById('add4').addEventListener('click', function(event) { 
+    addToWishlist(5, event);
+});
+document.getElementById('add5').addEventListener('click', function(event) { 
+    addToWishlist(6, event);
+});
 </script>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenMax.min.js"></script> 
    <script type="text/javascript" src="cssanimation-gsap.js"></script>

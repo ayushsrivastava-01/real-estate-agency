@@ -5,62 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist</title>
     <link rel="icon" type="image/jpg" href="Images/new logo.jpg">
-    <link rel="stylesheet" href="CSS files/Search.css">
+    <link rel="stylesheet" href="CSS files/Cart.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        .wishlist-header {
-            text-align: center;
-            margin: 40px 0;
-        }
-        
-        .wishlist-header h1 {
-            color: #ff416c;
-            font-size: 3rem;
-        }
-        
-        .back-home {
-            display: inline-block;
-            background: #ff416c;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-            margin: 20px 0;
-            font-weight: 500;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 50px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: 50px auto;
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-        
-        .empty-state h2 {
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .explore-btn {
-            display: inline-block;
-            background: #ff416c;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            margin-top: 20px;
-            font-weight: 500;
-        }
-    </style>
 </head>
 <body>
     <div class="wishlist-header">
@@ -68,6 +14,12 @@
             <i class="fas fa-arrow-left"></i> Back to Home
         </a>
         <h1><i class="fas fa-heart"></i> My Wishlist</h1>
+        <div id="wishlistCount" class="wishlist-count">0 items</div>
+        <div class="wishlist-actions">
+            <button class="clear-all-btn" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
+        </div>
     </div>
 
     <div id="wishlistContainer" class="house-container">
@@ -81,88 +33,92 @@
         <a href="Search.html" class="explore-btn">
             <i class="fas fa-search"></i> Explore Properties
         </a>
+        <br><br>
+        <a href="main.html" class="back-home">
+            <i class="fas fa-home"></i> Go to Homepage
+        </a>
     </div>
 
     <script>
-        // Property database - MUST match Search.html properties
+        // Property database - MUST match Homepage.html properties
         const properties = [
             {
                 id: 1,
                 title: "House for Sale",
                 type: "House",
                 price: "₹50 Lakh",
-                location: "Greater Noida, Sector-55",
+                location: "Greater Noida,Sector-55,Block C,Near xyz chauraha",
                 bedrooms: "3 BHK",
-                image: "Images/House 4.jpg",
+                image: "Images/House 2.jpg",
                 details: "Modern house and apartment",
                 area: "1500 sq.ft",
                 status: "For Sale",
-                link: "House 2.html"
+                link: "House.html"
             },
             {
                 id: 2,
-                title: "Villa for Sale",
-                type: "Villa",
-                price: "₹1.2 Crore",
-                location: "Banglore, Sector-45",
-                bedrooms: "4 BHK",
-                image: "Images/House.jpg",
-                details: "Luxury villa with garden",
-                area: "2500 sq.ft",
-                status: "For Sale",
-                link: "House 4.html"
-            },
-            {
-                id: 3,
-                title: "Flat for Rent",
-                type: "Flat",
-                price: "₹25,000/month",
-                location: "Nagloi, Old Delhi",
-                bedrooms: "2 BHK",
-                image: "Images/bedroom 2.jpg",
-                details: "Fully furnished flat",
-                area: "1000 sq.ft",
-                status: "For Rent",
-                link: "House 6.html"
-            },
-            {
-                id: 4,
-                title: "Modern House",
-                type: "House",
-                price: "₹75 Lakh",
-                location: "London, Near xyz beach",
-                bedrooms: "4 BHK",
-                image: "Images/home.jpg",
-                details: "Modern house with sea view",
-                area: "2000 sq.ft",
-                status: "For Sale",
-                link: "House 5.html"
-            },
-            {
-                id: 5,
-                title: "House for Sale",
-                type: "House",
-                price: "₹60 Lakh",
-                location: "London, United Kingdom",
-                bedrooms: "3 BHK",
-                image: "Images/home.jpg",
-                details: "Modern house",
-                area: "1800 sq.ft",
-                status: "For Sale",
-                link: "House 5.html"
-            },
-            {
-                id: 6,
                 title: "Flat for Sale",
                 type: "Flat",
                 price: "₹45 Lakh",
-                location: "Nagloi, Old Delhi",
+                location: "Nagloi,Gali-3,Old Delhi,India",
                 bedrooms: "2 BHK",
                 image: "Images/House 4.jpg",
                 details: "Flat and apartment",
                 area: "1200 sq.ft",
                 status: "For Sale",
                 link: "House 2.html"
+            },
+            {
+                id: 3,
+                title: "Villa for Sale",
+                type: "Villa",
+                price: "₹1.2 Crore",
+                location: "Banglore,Sector-45,Near IIMT College,India",
+                bedrooms: "4 BHK",
+                image: "Images/House Inside.jpg",
+                details: "Luxury Villa",
+                area: "2500 sq.ft",
+                status: "For Sale",
+                link: "House 3.html"
+            },
+            {
+                id: 4,
+                title: "Building for Rent",
+                type: "Building",
+                price: "₹80,000/month",
+                location: "Andheri West,Near Gali-30,Mumbai",
+                bedrooms: "5 BHK",
+                image: "Images/House.jpg",
+                details: "Big Bungalow",
+                area: "3000 sq.ft",
+                status: "For Rent",
+                link: "House 4.html"
+            },
+            {
+                id: 5,
+                title: "House for Sale",
+                type: "House",
+                price: "₹75 Lakh",
+                location: "London,Near xyz beach,United Kingdom",
+                bedrooms: "3 BHK",
+                image: "Images/home.jpg",
+                details: "Modern house",
+                area: "2000 sq.ft",
+                status: "For Sale",
+                link: "House 5.html"
+            },
+            {
+                id: 6,
+                title: "Flat for Rent",
+                type: "Flat",
+                price: "₹25,000/month",
+                location: "Toronto,Sector-C20,Canada",
+                bedrooms: "2 BHK",
+                image: "Images/bedroom 2.jpg",
+                details: "Modern flat",
+                area: "1000 sq.ft",
+                status: "For Rent",
+                link: "House 6.html"
             }
         ];
 
@@ -174,11 +130,13 @@
         function loadWishlist() {
             const container = document.getElementById('wishlistContainer');
             const emptyState = document.getElementById('emptyState');
+            const wishlistCount = document.getElementById('wishlistCount');
             
             // Get wishlist from localStorage
             const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
             
-            console.log("Wishlist IDs from localStorage:", wishlist);
+            // Update count
+            wishlistCount.textContent = `${wishlist.length} ${wishlist.length === 1 ? 'item' : 'items'}`;
             
             // Clear container
             container.innerHTML = '';
@@ -201,8 +159,6 @@
                 if (property) {
                     const propertyCard = createPropertyCard(property);
                     container.appendChild(propertyCard);
-                } else {
-                    console.warn("Property not found for ID:", propertyId);
                 }
             });
         }
@@ -214,9 +170,7 @@
                 <img src="${property.image}" alt="${property.title}">
                 <div class="ctr">
                     <h2>${property.title}</h2>
-                    <i class="fas fa-heart" title="Remove from Wishlist" 
-                       onclick="removeFromWishlist(${property.id})" 
-                       style="color: #ff416c;"></i>
+                    <i class="fas fa-heart" title="Remove from Wishlist" style="color: #ff416c;"></i>
                 </div>
                 <h4>${property.details}</h4>
                 <div class="location">
@@ -227,9 +181,9 @@
                 <p><strong>Type:</strong> ${property.type}</p>
                 <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
                 <p><strong>Area:</strong> ${property.area}</p>
+                <p><strong>Status:</strong> ${property.status}</p>
                 <a href="${property.link}" class="property-btn">View Property</a>
-                <button class="remove-btn" onclick="removeFromWishlist(${property.id})" 
-                        style="background: #ff6b6b; color: white; border: none; padding: 10px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                <button class="remove-btn" onclick="removeFromWishlist(${property.id})">
                     <i class="fas fa-trash"></i> Remove from Wishlist
                 </button>
             `;
@@ -242,24 +196,40 @@
             // Find property for alert message
             const property = properties.find(p => p.id === propertyId);
             
-            if (confirm(`Remove "${property?.title}" from wishlist?`)) {
-                // Remove property ID from wishlist
-                wishlist = wishlist.filter(id => id !== propertyId);
-                localStorage.setItem('wishlist', JSON.stringify(wishlist));
-                
-                alert('Removed from wishlist!');
-                loadWishlist(); // Refresh display
-            }
+            // Remove property ID from wishlist
+            wishlist = wishlist.filter(id => id !== propertyId);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            
+            // Update the heart icon on homepage
+            updateHomepageHeart(propertyId, false);
+            
+            alert('✓ Removed from wishlist!');
+            loadWishlist(); // Refresh display
         }
 
-        // Clear all wishlist items
         function clearAll() {
-            if (confirm('Clear entire wishlist?')) {
+            if (confirm('Are you sure you want to clear your entire wishlist?')) {
+                // Clear all hearts on homepage
+                const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+                wishlist.forEach(propertyId => {
+                    updateHomepageHeart(propertyId, false);
+                });
+                
                 localStorage.removeItem('wishlist');
                 alert('Wishlist cleared!');
                 loadWishlist();
             }
         }
+
+        // Update heart icon on homepage (simulate)
+        function updateHomepageHeart(propertyId, isAdded) {
+            // This would update the homepage if it were open
+            // In a real app, you might use events or check localStorage on homepage load
+            console.log(`Property ${propertyId} ${isAdded ? 'added to' : 'removed from'} wishlist`);
+        }
+
+        // Refresh wishlist every 2 seconds (optional, for real-time updates)
+        setInterval(loadWishlist, 2000);
     </script>
 </body>
 </html>
