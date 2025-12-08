@@ -1,0 +1,55 @@
+[[redirects]]
+  from = "/searchdetails"
+  to = "/SearchDetails.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin"
+  to = "/Admin.html"
+  status = 301
+
+[[redirects]]
+  from = "/Admin"
+  to = "/Admin.html"
+  status = 301
+
+[[redirects]]
+  from = "/details"
+  to = "/Details.html"
+  status = 301
+
+[[redirects]]
+  from = "/Details"
+  to = "/Details.html"
+  status = 301
+
+# Catch-all for case variations
+[[redirects]]
+  from = "/searchdetails.html"
+  to = "/SearchDetails.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/Admin.html"
+  status = 301
+
+[[redirects]]
+  from = "/details.html"
+  to = "/Details.html"
+  status = 301
+
+# Force HTTPS (optional but recommended)
+[[redirects]]
+  from = "http://sunriserealestate.netlify.app/*"
+  to = "https://sunriserealestate.netlify.app/:splat"
+  status = 301
+  force = true
+
+# Security headers (optional)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"

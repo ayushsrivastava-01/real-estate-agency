@@ -1,0 +1,9 @@
+# Netlify Redirects
+/searchdetails /SearchDetails.html 301
+/Admin /Admin.html 301
+/admin /Admin.html 301
+/Details /Details.html 301
+/details /Details.html 301
+/searchdetails.html /SearchDetails.html 301
+/admin.html /Admin.html 301
+/details.html /Details.html 301
