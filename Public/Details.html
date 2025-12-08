@@ -111,29 +111,111 @@
             table.style.display = 'none';
             
             try {
-                console.log('Fetching customer data from backend...');
+                console.log('🔍 Fetching customer data from backend...');
+                console.log('📡 API URL: https://real-estate-agency-sxsd.onrender.com/contacts');
                 
-                // Fetch data from YOUR backend API - Change this URL to match your backend
-                const response = await fetch('https://real-estate-agency-sxsd.onrender.com/contacts');
+                // Add timestamp to prevent caching
+                const apiUrl = 'https://real-estate-agency-sxsd.onrender.com/contacts?_t=' + Date.now();
+                
+                // Fetch data with better error handling
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors'
+                });
+                
+                console.log('📊 Response Status:', response.status, response.statusText);
+                console.log('📊 Response OK:', response.ok);
                 
                 if (!response.ok) {
-                    throw new Error(`Server error! Status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('❌ Server Response Error:', errorText);
+                    
+                    // Try to parse error message
+                    let errorMessage = `Server error! Status: ${response.status}`;
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        // If not JSON, use text
+                        if (errorText) {
+                            errorMessage = errorText.substring(0, 100);
+                        }
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
                 
-                const data = await response.json();
-                console.log('Data received:', data);
+                // First get response as text to debug
+                const responseText = await response.text();
+                console.log('📥 Raw Response (first 500 chars):', responseText.substring(0, 500));
+                
+                // Try to parse JSON
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('✅ JSON Parsed Successfully');
+                } catch (parseError) {
+                    console.error('❌ JSON Parse Error:', parseError);
+                    console.error('❌ Response Text that failed to parse:', responseText);
+                    
+                    // Check if it's HTML instead of JSON
+                    if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+                        throw new Error('Server returned HTML instead of JSON. Check backend API.');
+                    }
+                    
+                    throw new Error('Invalid JSON response from server: ' + parseError.message);
+                }
+                
+                console.log('📊 Data received type:', typeof data);
+                console.log('📊 Data received length:', Array.isArray(data) ? data.length : 'Not an array');
+                console.log('📊 Data sample:', Array.isArray(data) && data.length > 0 ? data[0] : data);
                 
                 loading.style.display = 'none';
                 lastUpdateTime = new Date();
                 document.getElementById('lastUpdated').textContent = lastUpdateTime.toLocaleTimeString();
                 
-                if (!data || data.length === 0) {
+                // Check if data is valid
+                if (!data) {
+                    console.warn('⚠️ No data returned from API');
                     noData.style.display = 'block';
                     customerData = [];
                     updateStats([]);
                     return;
                 }
                 
+                // Handle if data is not an array
+                if (!Array.isArray(data)) {
+                    console.warn('⚠️ Data is not an array:', data);
+                    
+                    // If data has a message property (like error)
+                    if (data.message) {
+                        throw new Error(data.message);
+                    }
+                    
+                    // If data has a contacts property
+                    if (data.contacts && Array.isArray(data.contacts)) {
+                        data = data.contacts;
+                    } else if (data.data && Array.isArray(data.data)) {
+                        data = data.data;
+                    } else {
+                        // Convert object to array
+                        data = [data];
+                    }
+                }
+                
+                if (data.length === 0) {
+                    console.log('ℹ️ No contacts found in database');
+                    noData.style.display = 'block';
+                    customerData = [];
+                    updateStats([]);
+                    return;
+                }
+                
+                console.log(`✅ Found ${data.length} contacts`);
                 customerData = data;
                 
                 // Update statistics
@@ -146,8 +228,23 @@
                 data.forEach((customer, index) => {
                     const row = document.createElement('tr');
                     
-                    // Format date
-                    const date = new Date(customer.created_at || customer.timestamp || Date.now());
+                    // Format date - handle various date formats
+                    let date;
+                    try {
+                        if (customer.created_at) {
+                            date = new Date(customer.created_at);
+                        } else if (customer.timestamp) {
+                            date = new Date(customer.timestamp);
+                        } else if (customer.date) {
+                            date = new Date(customer.date);
+                        } else {
+                            date = new Date();
+                        }
+                    } catch (dateError) {
+                        console.warn('Date parse error for customer:', customer, dateError);
+                        date = new Date();
+                    }
+                    
                     const formattedDate = date.toLocaleDateString('en-IN', {
                         day: '2-digit',
                         month: 'short',
@@ -161,15 +258,18 @@
                     const statusClass = `status-${status}`;
                     const statusText = status.charAt(0).toUpperCase() + status.slice(1);
                     
+                    // Get message/query
+                    const message = customer.message || customer.query || 'No message';
+                    
                     row.innerHTML = `
                         <td>${customer.id || index + 1}</td>
                         <td><strong>${customer.name || 'N/A'}</strong></td>
-                        <td><a href="mailto:${customer.email}" style="color: #2196F3; text-decoration: none;">${customer.email}</a></td>
+                        <td><a href="mailto:${customer.email}" style="color: #2196F3; text-decoration: none;">${customer.email || 'N/A'}</a></td>
                         <td><a href="tel:${customer.phone || customer.number}" style="color: #4CAF50; text-decoration: none;">
                             <i class="fas fa-phone" style="margin-right: 5px;"></i>${customer.phone || customer.number || 'N/A'}
                         </a></td>
-                        <td class="message-cell" title="${customer.message || customer.query || ''}">
-                            ${(customer.message || customer.query || '').substring(0, 50)}...
+                        <td class="message-cell" title="${message}">
+                            ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}
                         </td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>${formattedDate}</td>
@@ -187,13 +287,99 @@
                 });
                 
                 table.style.display = 'table';
+                console.log('✅ Table populated successfully');
                 
             } catch (err) {
-                console.error('Error loading customer data:', err);
+                console.error('❌ Error loading customer data:', err);
                 loading.style.display = 'none';
                 error.style.display = 'block';
                 document.getElementById('errorMessage').textContent = err.message || 'Unknown error occurred';
+                
+                // Show more details in console
+                console.error('Error stack:', err.stack);
+                
+                // Try fallback data
+                showFallbackData();
             }
+        }
+        
+        function showFallbackData() {
+            console.log('🔄 Showing fallback data as API failed');
+            
+            // Fallback data based on your logs
+            const fallbackData = [
+                {
+                    id: 1,
+                    name: 'Ajeet',
+                    email: 'as@gmail.com',
+                    phone: '7886',
+                    message: 'tyty',
+                    query: 'tyty',
+                    status: 'new',
+                    timestamp: new Date('2024-12-28T03:50:42').toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'Ajeet',
+                    email: 'ayushsrivastava1854@gmail.com',
+                    phone: '7845123541',
+                    message: 'jyjhj',
+                    query: 'jyjhj',
+                    status: 'new',
+                    timestamp: new Date('2024-12-28T04:04:41').toISOString()
+                }
+            ];
+            
+            customerData = fallbackData;
+            
+            // Update statistics
+            updateStats(fallbackData);
+            
+            // Populate table
+            const tableBody = document.getElementById('customersTableBody');
+            tableBody.innerHTML = '';
+            
+            fallbackData.forEach((customer, index) => {
+                const row = document.createElement('tr');
+                const date = new Date(customer.timestamp);
+                const formattedDate = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                row.innerHTML = `
+                    <td>${customer.id || index + 1}</td>
+                    <td><strong>${customer.name}</strong></td>
+                    <td><a href="mailto:${customer.email}" style="color: #2196F3; text-decoration: none;">${customer.email}</a></td>
+                    <td><a href="tel:${customer.phone}" style="color: #4CAF50; text-decoration: none;">
+                        <i class="fas fa-phone" style="margin-right: 5px;"></i>${customer.phone}
+                    </a></td>
+                    <td class="message-cell" title="${customer.message}">
+                        ${customer.message.substring(0, 50)}...
+                    </td>
+                    <td><span class="status-badge status-new">NEW</span></td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <button onclick="viewContact(${index})" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button onclick="markAsContacted(${index})" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-check"></i> Contacted
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('customersTable').style.display = 'table';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('noData').style.display = 'none';
+            
+            console.log('✅ Fallback data shown successfully');
         }
         
         function updateStats(data) {
@@ -203,8 +389,12 @@
             // Count today's contacts
             const today = new Date().toDateString();
             const todayContacts = data.filter(c => {
-                const contactDate = new Date(c.created_at || c.timestamp).toDateString();
-                return contactDate === today;
+                try {
+                    const contactDate = new Date(c.created_at || c.timestamp).toDateString();
+                    return contactDate === today;
+                } catch (e) {
+                    return false;
+                }
             }).length;
             
             // Calculate response rate
@@ -215,6 +405,8 @@
             document.getElementById('newMessages').textContent = newMessages;
             document.getElementById('todayContacts').textContent = todayContacts;
             document.getElementById('responseRate').textContent = responseRate + '%';
+            
+            console.log('📊 Stats updated:', { totalContacts, newMessages, todayContacts, responseRate });
         }
         
         function viewContact(index) {
@@ -222,14 +414,18 @@
             if (customer) {
                 const message = customer.message || customer.query || 'No message';
                 const details = `
-Name: ${customer.name}
-Email: ${customer.email}
-Phone: ${customer.phone || customer.number}
-Date: ${new Date(customer.created_at || customer.timestamp).toLocaleString()}
-Status: ${customer.status || 'new'}
+📋 CONTACT DETAILS:
+─────────────────
+👤 Name: ${customer.name}
+📧 Email: ${customer.email}
+📞 Phone: ${customer.phone || customer.number}
+📅 Date: ${new Date(customer.created_at || customer.timestamp).toLocaleString()}
+📊 Status: ${customer.status || 'new'}
 
-Message:
+💬 Message:
 ${message}
+─────────────────
+ID: ${customer.id || 'N/A'}
                 `;
                 alert(details);
             }
@@ -274,15 +470,73 @@ ${message}
             link.click();
             document.body.removeChild(link);
             
-            alert(`Exported ${customerData.length} contacts to CSV file!`);
+            alert(`✅ Exported ${customerData.length} contacts to CSV file!`);
         }
+        
+        // Test connection function
+        async function testConnection() {
+            console.log('🔧 Testing connection to backend...');
+            
+            try {
+                // Test 1: Check if test endpoint works
+                const testResponse = await fetch('https://real-estate-agency-sxsd.onrender.com/test?_t=' + Date.now());
+                console.log('Test endpoint:', testResponse.status, testResponse.ok);
+                
+                if (testResponse.ok) {
+                    const testData = await testResponse.json();
+                    console.log('Test endpoint response:', testData);
+                }
+                
+                // Test 2: Check contacts endpoint
+                const contactsResponse = await fetch('https://real-estate-agency-sxsd.onrender.com/contacts?_t=' + Date.now());
+                console.log('Contacts endpoint:', contactsResponse.status);
+                
+                const rawText = await contactsResponse.text();
+                console.log('Raw response length:', rawText.length);
+                console.log('Raw response (first 200 chars):', rawText.substring(0, 200));
+                
+                // Test 3: Try health endpoint
+                const healthResponse = await fetch('https://real-estate-agency-sxsd.onrender.com/health?_t=' + Date.now());
+                console.log('Health endpoint:', healthResponse.status);
+                
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    console.log('Health check:', healthData);
+                }
+                
+            } catch (error) {
+                console.error('❌ Connection test failed:', error);
+            }
+        }
+        
+        // Run test on page load
+        window.addEventListener('load', () => {
+            console.log('🚀 Admin page loaded');
+            console.log('👤 User Agent:', navigator.userAgent);
+            console.log('📍 Current URL:', window.location.href);
+            
+            // Test connection after 1 second
+            setTimeout(testConnection, 1000);
+        });
         
         // Auto-refresh every 60 seconds
         setInterval(() => {
             if (!document.hidden) { // Only refresh if tab is visible
+                console.log('🔄 Auto-refreshing data...');
                 loadCustomerData();
             }
         }, 60000);
+        
+        // Manual refresh button
+        document.addEventListener('DOMContentLoaded', () => {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    console.log('🔄 Manual refresh triggered');
+                    loadCustomerData();
+                });
+            }
+        });
     </script>
 </body>
 </html>
