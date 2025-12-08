@@ -219,6 +219,13 @@
         const loader = document.querySelector('.loader');
         const submitBtn = this.querySelector('.button');
         const originalBtnText = submitBtn.textContent;
+        const resultsSection = document.querySelector('.facilities-head');
+        const houseContainer = document.getElementById('buy-sell');
+        
+        // Reset results section
+        resultsSection.style.display = 'none';
+        houseContainer.style.display = 'none';
+        houseContainer.innerHTML = '';
         
         // Show loader
         loader.style.display = 'flex';
@@ -228,11 +235,13 @@
         try {
             // Collect form data
             const formData = new FormData(this);
-            const formDataObj = Object.fromEntries(formData);
             
-            console.log('Search Form Data:', formDataObj);
+            console.log('Searching with criteria:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
             
-            // Send data to YOUR backend API
+            // Send data to backend API
             const response = await fetch('https://real-estate-agency-sxsd.onrender.com/search', {
                 method: 'POST',
                 headers: {
@@ -241,11 +250,14 @@
                 body: new URLSearchParams(formData)
             });
             
+            console.log('Response status:', response.status);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const result = await response.json();
+            console.log('API Response:', result);
             
             // Hide loader
             loader.style.display = 'none';
@@ -257,41 +269,47 @@
                 alert(`✅ ${result.message || "Search completed successfully!"}`);
             } else {
                 alert(`❌ ${result.message || "Search failed!"}`);
+                return; // If search failed, stop here
             }
             
             // Show results section if properties found
             if (result.properties && result.properties.length > 0) {
-                const resultsSection = document.querySelector('.facilities-head');
-                const houseContainer = document.getElementById('buy-sell');
+                console.log(`Found ${result.properties.length} properties`);
                 
                 resultsSection.style.display = 'block';
                 houseContainer.style.display = 'flex';
-                houseContainer.innerHTML = '';
                 
                 // Display properties
                 result.properties.forEach(property => {
-                    const propertyFile = property.link || 
-                        (property.id === 1 ? 'House 2.html' : 
-                         property.id === 2 ? 'House 4.html' : 
-                         property.id === 3 ? 'House 6.html' : 'main.html');
+                    console.log('Processing property:', property);
+                    
+                    // Determine property file link
+                    let propertyFile = 'main.html'; // default
+                    if (property.id === 1 || property.title?.includes("House")) {
+                        propertyFile = 'House 2.html';
+                    } else if (property.id === 2 || property.title?.includes("Villa")) {
+                        propertyFile = 'House 4.html';
+                    } else if (property.id === 3 || property.title?.includes("Flat")) {
+                        propertyFile = 'House 6.html';
+                    }
                     
                     const propertyHTML = `
                         <div class="house" id="animation">
-                            <img src="${property.image || 'Images/default.jpg'}" alt="${property.title}">
+                            <img src="${property.image || 'Images/default.jpg'}" alt="${property.title || 'Property'}" onerror="this.src='Images/default.jpg'">
                             <div class="ctr">
-                                <h2>${property.title}</h2>
-                                <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id})"></i>
+                                <h2>${property.title || 'Property for Sale'}</h2>
+                                <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id || '1'})"></i>
                             </div>
-                            <h4>${property.details || ''}</h4>
+                            <h4>${property.details || 'Modern property with all amenities'}</h4>
                             <div class="location">
                                 <i class="fas fa-map-marker-alt" id="locate"></i>
-                                <p style="color: black;">${property.location}</p>
+                                <p style="color: black;">${property.location || 'Location not specified'}</p>
                             </div>
-                            <p><strong>Price:</strong> ${property.price}</p>
-                            <p><strong>Type:</strong> ${property.type}</p>
-                            <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
-                            <p><strong>Area:</strong> ${property.area}</p>
-                            <p><strong>Status:</strong> ${property.status}</p>
+                            <p><strong>Price:</strong> ${property.price || 'Contact for price'}</p>
+                            <p><strong>Type:</strong> ${property.type || 'Not specified'}</p>
+                            <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                            <p><strong>Area:</strong> ${property.area || 'Not specified'}</p>
+                            <p><strong>Status:</strong> ${property.status || 'Available'}</p>
                             <a href="${propertyFile}" class="property-btn">View Property</a>
                         </div>
                     `;
@@ -299,7 +317,18 @@
                 });
                 
                 // Scroll to results
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                    resultsSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }, 100);
+                
+            } else {
+                // No properties found
+                resultsSection.style.display = 'block';
+                resultsSection.textContent = "No properties found matching your criteria";
+                houseContainer.style.display = 'none';
             }
             
         } catch (error) {
@@ -307,88 +336,113 @@
             loader.style.display = 'none';
             submitBtn.textContent = originalBtnText;
             submitBtn.disabled = false;
-            alert('❌ Error searching properties. Please try again.');
+            
+            // Show fallback properties in case of error
+            alert('⚠️ Using demo properties. Server connection failed.');
+            showFallbackProperties();
         }
     });
     
     function addToWishlist(propertyId) {
         alert(`Property ${propertyId} added to wishlist!`);
+        // Here you can implement actual wishlist functionality
     }
     
-    // Initial static properties (for testing if AJAX fails)
-    function loadStaticProperties() {
+    // Function to show fallback/demo properties
+    function showFallbackProperties() {
+        const resultsSection = document.querySelector('.facilities-head');
         const houseContainer = document.getElementById('buy-sell');
-        if (houseContainer.children.length === 0) {
-            const staticProperties = [
-                {
-                    id: 1,
-                    title: "House for Sale",
-                    type: "House",
-                    price: "₹50 Lakh",
-                    location: "Greater Noida, Sector-55",
-                    bedrooms: "3 BHK",
-                    image: "Images/House 4.jpg",
-                    details: "Modern house and apartment",
-                    area: "1500 sq.ft",
-                    status: "For Sale",
-                    link: "House 2.html"
-                },
-                {
-                    id: 2,
-                    title: "Villa for Sale",
-                    type: "Villa",
-                    price: "₹1.2 Crore",
-                    location: "Banglore, Sector-45",
-                    bedrooms: "4 BHK",
-                    image: "Images/House.jpg",
-                    details: "Luxury villa with garden",
-                    area: "2500 sq.ft",
-                    status: "For Sale",
-                    link: "House 4.html"
-                },
-                {
-                    id: 3,
-                    title: "Flat for Rent",
-                    type: "Flat",
-                    price: "₹25,000/month",
-                    location: "Nagloi, Old Delhi",
-                    bedrooms: "2 BHK",
-                    image: "Images/bedroom 2.jpg",
-                    details: "Fully furnished flat",
-                    area: "1000 sq.ft",
-                    status: "For Rent",
-                    link: "House 6.html"
-                }
-            ];
-            
-            staticProperties.forEach(property => {
-                const propertyHTML = `
-                    <div class="house" id="animation">
-                        <img src="${property.image}" alt="${property.title}">
-                        <div class="ctr">
-                            <h2>${property.title}</h2>
-                            <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id})"></i>
-                        </div>
-                        <h4>${property.details}</h4>
-                        <div class="location">
-                            <i class="fas fa-map-marker-alt" id="locate"></i>
-                            <p style="color: black;">${property.location}</p>
-                        </div>
-                        <p><strong>Price:</strong> ${property.price}</p>
-                        <p><strong>Type:</strong> ${property.type}</p>
-                        <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
-                        <p><strong>Area:</strong> ${property.area}</p>
-                        <p><strong>Status:</strong> ${property.status}</p>
-                        <a href="${property.link}" class="property-btn">View Property</a>
+        
+        resultsSection.style.display = 'block';
+        resultsSection.textContent = "Demo Properties (Server Offline)";
+        houseContainer.style.display = 'flex';
+        houseContainer.innerHTML = '';
+        
+        const demoProperties = [
+            {
+                id: 1,
+                title: "Modern House for Sale",
+                type: "House",
+                price: "₹50 Lakh",
+                location: "Greater Noida, Sector-55",
+                bedrooms: "3 BHK",
+                image: "Images/House 4.jpg",
+                details: "Modern house with garden",
+                area: "1500 sq.ft",
+                status: "For Sale",
+                link: "House 2.html"
+            },
+            {
+                id: 2,
+                title: "Luxury Villa",
+                type: "Villa",
+                price: "₹1.2 Crore",
+                location: "Bangalore, Sector-45",
+                bedrooms: "4 BHK",
+                image: "Images/House.jpg",
+                details: "Luxury villa with swimming pool",
+                area: "2500 sq.ft",
+                status: "For Sale",
+                link: "House 4.html"
+            },
+            {
+                id: 3,
+                title: "Furnished Flat for Rent",
+                type: "Flat",
+                price: "₹25,000/month",
+                location: "Nagloi, Old Delhi",
+                bedrooms: "2 BHK",
+                image: "Images/bedroom 2.jpg",
+                details: "Fully furnished flat",
+                area: "1000 sq.ft",
+                status: "For Rent",
+                link: "House 6.html"
+            },
+            {
+                id: 4,
+                title: "Commercial Shop",
+                type: "Shop",
+                price: "₹75 Lakh",
+                location: "Delhi, Block-B",
+                bedrooms: "Commercial",
+                image: "Images/living room.jpg",
+                details: "Prime location shop",
+                area: "800 sq.ft",
+                status: "For Sale",
+                link: "main.html"
+            }
+        ];
+        
+        demoProperties.forEach(property => {
+            const propertyHTML = `
+                <div class="house" id="animation">
+                    <img src="${property.image}" alt="${property.title}" onerror="this.src='Images/default.jpg'">
+                    <div class="ctr">
+                        <h2>${property.title}</h2>
+                        <i class="fas fa-heart" title="Add to Wishlist" onclick="addToWishlist(${property.id})"></i>
                     </div>
-                `;
-                houseContainer.innerHTML += propertyHTML;
-            });
-        }
+                    <h4>${property.details}</h4>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt" id="locate"></i>
+                        <p style="color: black;">${property.location}</p>
+                    </div>
+                    <p><strong>Price:</strong> ${property.price}</p>
+                    <p><strong>Type:</strong> ${property.type}</p>
+                    <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
+                    <p><strong>Area:</strong> ${property.area}</p>
+                    <p><strong>Status:</strong> ${property.status}</p>
+                    <a href="${property.link}" class="property-btn">View Property</a>
+                </div>
+            `;
+            houseContainer.innerHTML += propertyHTML;
+        });
     }
     
-    // Load static properties on page load for testing
-    window.addEventListener('DOMContentLoaded', loadStaticProperties);
+    // Load demo properties on page load for testing
+    window.addEventListener('DOMContentLoaded', function() {
+        // You can remove this if you don't want demo properties on load
+        // showFallbackProperties();
+    });
 </script>
 
   <!-- smooth scroll  -->

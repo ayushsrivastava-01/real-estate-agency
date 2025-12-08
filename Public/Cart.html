@@ -11,32 +11,50 @@
 <body>
     <div class="wishlist-header">
         <a href="main.html" class="back-home">
-            <i class="fas fa-arrow-left"></i> Back to Home
+            <i class="fas fa-arrow-left"></i> Back to Homepage
         </a>
         <h1><i class="fas fa-heart"></i> My Wishlist</h1>
-        <div id="wishlistCount" class="wishlist-count">0 items</div>
-        <div class="wishlist-actions">
-            <button class="clear-all-btn" onclick="clearAll()">
-                <i class="fas fa-trash"></i> Clear All
-            </button>
+        
+        <div class="wishlist-info">
+            <div id="wishlistCount" class="wishlist-count">0 items</div>
+            <div class="wishlist-actions">
+                <button class="clear-all-btn" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="wishlistContainer" class="house-container">
-        <!-- Properties will be loaded here -->
+    <div class="properties-container">
+        <div id="loading" class="loading-container" style="display: none;">
+            <div class="loading">
+                <i class="fas fa-spinner"></i>
+                <div class="loading-text">Loading your wishlist...</div>
+            </div>
+        </div>
+
+        <div id="wishlistContainer" class="properties-grid">
+            <!-- Properties will be loaded here -->
+        </div>
     </div>
 
     <div id="emptyState" class="empty-state" style="display: none;">
         <i class="fas fa-heart-broken"></i>
         <h2>Your wishlist is empty</h2>
-        <p>You haven't added any properties to your wishlist yet.</p>
-        <a href="Search.html" class="explore-btn">
-            <i class="fas fa-search"></i> Explore Properties
-        </a>
-        <br><br>
-        <a href="main.html" class="back-home">
-            <i class="fas fa-home"></i> Go to Homepage
-        </a>
+        <p>Looks like you haven't added any properties to your wishlist yet. Start exploring our amazing properties!</p>
+        <div class="empty-state-actions">
+            <a href="Search.html" class="explore-btn">
+                <i class="fas fa-search"></i> Explore Properties
+            </a>
+            <a href="main.html" class="explore-btn">
+                <i class="fas fa-home"></i> Go to Homepage
+            </a>
+        </div>
+    </div>
+
+    <div class="wishlist-footer">
+        <p>Need help? <a href="Contact Form.html">Contact our support team</a></p>
+        <p>&copy; 2024 Sunrise Real Estate. All rights reserved.</p>
     </div>
 
     <script>
@@ -44,79 +62,85 @@
         const properties = [
             {
                 id: 1,
-                title: "House for Sale",
+                title: "Modern House for Sale",
                 type: "House",
                 price: "₹50 Lakh",
-                location: "Greater Noida,Sector-55,Block C,Near xyz chauraha",
-                bedrooms: "3 BHK",
-                image: "Images/House 2.jpg",
-                details: "Modern house and apartment",
+                location: "Greater Noida, Sector-55, Block C, Near XYZ Chauraha",
+                bedrooms: "3",
+                bathrooms: "2",
                 area: "1500 sq.ft",
+                image: "Images/House 2.jpg",
+                details: "Beautiful modern house with spacious rooms and modern amenities. Perfect for families.",
                 status: "For Sale",
                 link: "House.html"
             },
             {
                 id: 2,
-                title: "Flat for Sale",
+                title: "Luxury Flat for Sale",
                 type: "Flat",
                 price: "₹45 Lakh",
-                location: "Nagloi,Gali-3,Old Delhi,India",
-                bedrooms: "2 BHK",
-                image: "Images/House 4.jpg",
-                details: "Flat and apartment",
+                location: "Nagloi, Gali-3, Old Delhi, India",
+                bedrooms: "2",
+                bathrooms: "2",
                 area: "1200 sq.ft",
+                image: "Images/House 4.jpg",
+                details: "Spacious flat with modern kitchen and attached balconies. Ready to move in.",
                 status: "For Sale",
                 link: "House 2.html"
             },
             {
                 id: 3,
-                title: "Villa for Sale",
+                title: "Premium Villa for Sale",
                 type: "Villa",
                 price: "₹1.2 Crore",
-                location: "Banglore,Sector-45,Near IIMT College,India",
-                bedrooms: "4 BHK",
-                image: "Images/House Inside.jpg",
-                details: "Luxury Villa",
+                location: "Banglore, Sector-45, Near IIMT College, India",
+                bedrooms: "4",
+                bathrooms: "3",
                 area: "2500 sq.ft",
+                image: "Images/House Inside.jpg",
+                details: "Luxury villa with garden, swimming pool, and premium amenities.",
                 status: "For Sale",
                 link: "House 3.html"
             },
             {
                 id: 4,
-                title: "Building for Rent",
+                title: "Bungalow for Rent",
                 type: "Building",
                 price: "₹80,000/month",
-                location: "Andheri West,Near Gali-30,Mumbai",
-                bedrooms: "5 BHK",
-                image: "Images/House.jpg",
-                details: "Big Bungalow",
+                location: "Andheri West, Near Gali-30, Mumbai",
+                bedrooms: "5",
+                bathrooms: "4",
                 area: "3000 sq.ft",
+                image: "Images/House.jpg",
+                details: "Big bungalow with servant quarters and parking for 4 cars.",
                 status: "For Rent",
                 link: "House 4.html"
             },
             {
                 id: 5,
-                title: "House for Sale",
+                title: "Modern House Abroad",
                 type: "House",
                 price: "₹75 Lakh",
-                location: "London,Near xyz beach,United Kingdom",
-                bedrooms: "3 BHK",
-                image: "Images/home.jpg",
-                details: "Modern house",
+                location: "London, Near XYZ Beach, United Kingdom",
+                bedrooms: "3",
+                bathrooms: "3",
                 area: "2000 sq.ft",
+                image: "Images/home.jpg",
+                details: "Modern house with sea view and European style architecture.",
                 status: "For Sale",
                 link: "House 5.html"
             },
             {
                 id: 6,
-                title: "Flat for Rent",
+                title: "Furnished Flat for Rent",
                 type: "Flat",
                 price: "₹25,000/month",
-                location: "Toronto,Sector-C20,Canada",
-                bedrooms: "2 BHK",
-                image: "Images/bedroom 2.jpg",
-                details: "Modern flat",
+                location: "Toronto, Sector-C20, Canada",
+                bedrooms: "2",
+                bathrooms: "2",
                 area: "1000 sq.ft",
+                image: "Images/bedroom 2.jpg",
+                details: "Fully furnished modern flat with all amenities included.",
                 status: "For Rent",
                 link: "House 6.html"
             }
@@ -130,106 +154,186 @@
         function loadWishlist() {
             const container = document.getElementById('wishlistContainer');
             const emptyState = document.getElementById('emptyState');
+            const loading = document.getElementById('loading');
             const wishlistCount = document.getElementById('wishlistCount');
             
-            // Get wishlist from localStorage
-            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-            
-            // Update count
-            wishlistCount.textContent = `${wishlist.length} ${wishlist.length === 1 ? 'item' : 'items'}`;
-            
-            // Clear container
+            // Show loading
+            loading.style.display = 'block';
             container.innerHTML = '';
             
-            // Check if wishlist is empty
-            if (wishlist.length === 0) {
-                emptyState.style.display = 'block';
-                container.style.display = 'none';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            container.style.display = 'flex';
-            
-            // Show each property in wishlist
-            wishlist.forEach(propertyId => {
-                // Find property in database
-                const property = properties.find(p => p.id === propertyId);
+            setTimeout(() => {
+                // Get wishlist from localStorage
+                const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
                 
-                if (property) {
-                    const propertyCard = createPropertyCard(property);
-                    container.appendChild(propertyCard);
+                // Update count
+                wishlistCount.textContent = `${wishlist.length} ${wishlist.length === 1 ? 'property' : 'properties'}`;
+                
+                // Hide loading
+                loading.style.display = 'none';
+                
+                // Check if wishlist is empty
+                if (wishlist.length === 0) {
+                    emptyState.style.display = 'block';
+                    container.style.display = 'none';
+                    return;
                 }
-            });
+                
+                emptyState.style.display = 'none';
+                container.style.display = 'grid';
+                
+                // Show each property in wishlist
+                wishlist.forEach(propertyId => {
+                    // Find property in database
+                    const property = properties.find(p => p.id === propertyId);
+                    
+                    if (property) {
+                        const propertyCard = createPropertyCard(property);
+                        container.appendChild(propertyCard);
+                    }
+                });
+            }, 500); // Simulate loading delay
         }
 
         function createPropertyCard(property) {
             const card = document.createElement('div');
-            card.className = 'house';
+            card.className = 'property-card';
             card.innerHTML = `
-                <img src="${property.image}" alt="${property.title}">
-                <div class="ctr">
-                    <h2>${property.title}</h2>
-                    <i class="fas fa-heart" title="Remove from Wishlist" style="color: #ff416c;"></i>
+                <div class="property-image-container">
+                    <img src="${property.image}" alt="${property.title}" class="property-image">
+                    <div class="property-badge">${property.status}</div>
+                    <div class="wishlist-heart">
+                        <i class="fas fa-heart"></i>
+                    </div>
                 </div>
-                <h4>${property.details}</h4>
-                <div class="location">
-                    <i class="fas fa-map-marker-alt" id="locate"></i>
-                    <p style="color: black;">${property.location}</p>
+                <div class="property-content">
+                    <div class="property-header">
+                        <div>
+                            <h3 class="property-title">${property.title}</h3>
+                            <span class="property-type">${property.type}</span>
+                        </div>
+                    </div>
+                    <div class="property-price">${property.price}</div>
+                    
+                    <div class="property-details">
+                        <div class="detail-item">
+                            <i class="fas fa-bed"></i>
+                            <span>${property.bedrooms} Bedrooms</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bath"></i>
+                            <span>${property.bathrooms} Bathrooms</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>${property.area}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-building"></i>
+                            <span>${property.type}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${property.location}</span>
+                    </div>
+                    
+                    <p class="property-description">${property.details}</p>
+                    
+                    <div class="property-actions">
+                        <a href="${property.link}" class="view-btn">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <button class="remove-btn" onclick="removeFromWishlist(${property.id})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
                 </div>
-                <p><strong>Price:</strong> ${property.price}</p>
-                <p><strong>Type:</strong> ${property.type}</p>
-                <p><strong>Bedrooms:</strong> ${property.bedrooms}</p>
-                <p><strong>Area:</strong> ${property.area}</p>
-                <p><strong>Status:</strong> ${property.status}</p>
-                <a href="${property.link}" class="property-btn">View Property</a>
-                <button class="remove-btn" onclick="removeFromWishlist(${property.id})">
-                    <i class="fas fa-trash"></i> Remove from Wishlist
-                </button>
             `;
             return card;
         }
 
         function removeFromWishlist(propertyId) {
-            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-            
-            // Find property for alert message
-            const property = properties.find(p => p.id === propertyId);
-            
-            // Remove property ID from wishlist
-            wishlist = wishlist.filter(id => id !== propertyId);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            
-            // Update the heart icon on homepage
-            updateHomepageHeart(propertyId, false);
-            
-            alert('✓ Removed from wishlist!');
-            loadWishlist(); // Refresh display
-        }
-
-        function clearAll() {
-            if (confirm('Are you sure you want to clear your entire wishlist?')) {
-                // Clear all hearts on homepage
-                const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-                wishlist.forEach(propertyId => {
-                    updateHomepageHeart(propertyId, false);
-                });
+            if (confirm('Remove this property from your wishlist?')) {
+                let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
                 
-                localStorage.removeItem('wishlist');
-                alert('Wishlist cleared!');
+                // Remove property ID from wishlist
+                wishlist = wishlist.filter(id => id !== propertyId);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                
+                // Show success message
+                showNotification('Property removed from wishlist!', 'success');
+                
+                // Reload wishlist
                 loadWishlist();
             }
         }
 
-        // Update heart icon on homepage (simulate)
-        function updateHomepageHeart(propertyId, isAdded) {
-            // This would update the homepage if it were open
-            // In a real app, you might use events or check localStorage on homepage load
-            console.log(`Property ${propertyId} ${isAdded ? 'added to' : 'removed from'} wishlist`);
+        function clearAll() {
+            if (confirm('Are you sure you want to clear your entire wishlist? This action cannot be undone.')) {
+                localStorage.removeItem('wishlist');
+                showNotification('Wishlist cleared successfully!', 'success');
+                loadWishlist();
+            }
         }
 
-        // Refresh wishlist every 2 seconds (optional, for real-time updates)
-        setInterval(loadWishlist, 2000);
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // Add CSS for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            .notification button {
+                background: transparent;
+                border: none;
+                color: white;
+                cursor: pointer;
+                padding: 0;
+                font-size: 1.2rem;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
