@@ -100,14 +100,29 @@
             right: 20px;
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-size: 0.9em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-status .logout-mini {
+            margin-left: 10px;
+            padding: 3px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        
+        .auth-status .logout-mini:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -115,7 +130,10 @@
     <!-- Authentication Status Indicator -->
     <div id="authStatus" class="auth-status" style="display: none;">
         <i class="fas fa-user-shield"></i>
-        <span>Admin Authenticated</span>
+        <span id="adminEmailDisplay"></span>
+        <span class="logout-mini" onclick="showLogoutConfirm()" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+        </span>
     </div>
     
     <div style="text-align: center; margin-bottom: 20px;">
@@ -217,17 +235,13 @@
     <script>
         // Show authentication status on page load
         window.addEventListener('load', function() {
-            if (typeof authSystem !== 'undefined' && authSystem.isAuthenticated()) {
+            if (typeof authSystem !== 'undefined' && authSystem.isLoggedIn()) {
                 document.getElementById('authStatus').style.display = 'flex';
                 
                 // Show admin email
                 const adminEmail = localStorage.getItem('adminEmail');
                 if (adminEmail) {
-                    document.getElementById('authStatus').innerHTML = `
-                        <i class="fas fa-user-shield"></i>
-                        <span>${adminEmail}</span>
-                        <i class="fas fa-circle" style="font-size: 8px; color: #a5d6a7;"></i>
-                    `;
+                    document.getElementById('adminEmailDisplay').textContent = adminEmail;
                 }
             }
         });
@@ -251,47 +265,19 @@
         function performLogout() {
             // Use the auth system to properly logout
             if (typeof authSystem !== 'undefined') {
-                authSystem.clearAuthentication();
+                authSystem.logout();
             } else {
-                // Fallback: manually clear auth data
-                localStorage.removeItem('adminLoggedIn');
+                // Fallback
+                localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminEmail');
-                localStorage.removeItem('adminLoginTime');
+                localStorage.removeItem('loginTime');
                 localStorage.removeItem('redirectAfterLogin');
+                window.location.href = "index.html";
             }
-            
-            // Show logout success message
-            const logoutModal = document.getElementById('logoutModal');
-            logoutModal.innerHTML = `
-                <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%;">
-                    <div style="font-size: 60px; color: #4CAF50; margin-bottom: 20px;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 style="color: #333; margin-bottom: 15px;">Logged Out Successfully</h3>
-                    <p style="color: #666; margin-bottom: 25px;">
-                        You have been securely logged out from the admin panel.
-                    </p>
-                    <div style="font-size: 0.9em; color: #888; margin-bottom: 20px;">
-                        <i class="fas fa-shield-alt"></i> All session data has been cleared
-                    </div>
-                    <button onclick="redirectToHome()" style="padding: 10px 25px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; display: flex; align-items: center; gap: 8px; margin: 0 auto;">
-                        <i class="fas fa-home"></i> Go to Homepage
-                    </button>
-                </div>
-            `;
-            
-            // Auto-redirect after 3 seconds
-            setTimeout(redirectToHome, 3000);
         }
         
         function redirectToHome() {
             window.location.href = 'index.html';
-        }
-        
-        function logOut() {
-            if(confirm('Are you sure you want to logout?')) {
-                performLogout();
-            }
         }
         
         // Close modal when clicking outside
@@ -313,109 +299,6 @@
                 hideLogoutModal();
             }
         });
-        
-        // Session timeout warning (after 1 hour 45 minutes of login)
-        setTimeout(function() {
-            if (typeof authSystem !== 'undefined' && authSystem.isAuthenticated()) {
-                const loginTime = localStorage.getItem('adminLoginTime');
-                const currentTime = new Date().getTime();
-                const warningTime = 105 * 60 * 1000; // 1 hour 45 minutes
-                
-                if (loginTime && (currentTime - loginTime > warningTime)) {
-                    showSessionWarning();
-                }
-            }
-        }, 5000); // Check after 5 seconds of page load
-        
-        function showSessionWarning() {
-            const warningDiv = document.createElement('div');
-            warningDiv.id = 'sessionWarning';
-            warningDiv.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #ff9800, #f57c00);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(245, 124, 0, 0.4);
-                z-index: 1000;
-                max-width: 300px;
-                animation: slideInRight 0.5s ease;
-            `;
-            
-            warningDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <i class="fas fa-clock" style="font-size: 1.2em;"></i>
-                    <strong>Session Expiring Soon</strong>
-                </div>
-                <p style="margin: 0; font-size: 0.9em;">
-                    Your admin session will expire in 15 minutes.
-                    <br>
-                    <a href="#" onclick="extendSession()" style="color: white; text-decoration: underline; font-weight: bold;">
-                        Extend Session
-                    </a>
-                </p>
-            `;
-            
-            document.body.appendChild(warningDiv);
-            
-            // Auto-remove after 10 seconds
-            setTimeout(function() {
-                if (document.getElementById('sessionWarning')) {
-                    document.getElementById('sessionWarning').style.animation = 'slideOutRight 0.5s ease';
-                    setTimeout(function() {
-                        if (document.getElementById('sessionWarning')) {
-                            document.getElementById('sessionWarning').remove();
-                        }
-                    }, 500);
-                }
-            }, 10000);
-        }
-        
-        function extendSession() {
-            // Reset login time
-            localStorage.setItem('adminLoginTime', new Date().getTime());
-            
-            // Remove warning
-            const warning = document.getElementById('sessionWarning');
-            if (warning) {
-                warning.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-check-circle" style="font-size: 1.2em;"></i>
-                        <strong>Session Extended</strong>
-                    </div>
-                    <p style="margin: 10px 0 0 0; font-size: 0.9em;">
-                        Your session has been extended by 2 hours.
-                    </p>
-                `;
-                warning.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
-                
-                setTimeout(function() {
-                    if (warning) {
-                        warning.style.animation = 'slideOutRight 0.5s ease';
-                        setTimeout(function() {
-                            if (warning) warning.remove();
-                        }, 500);
-                    }
-                }, 3000);
-            }
-        }
-        
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
