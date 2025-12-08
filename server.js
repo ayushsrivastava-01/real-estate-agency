@@ -10,17 +10,16 @@ const app = express();
 
 // ==================== CORS Configuration ====================
 const allowedOrigins = [
-  'https://sunriserealestate.netlify.app',  // ✅ YOUR NETLIFY URL
-  'http://sunriserealestate.netlify.app',   // ✅ Without https
-  'http://localhost:5500',                  // Local Live Server
-  'http://localhost:3000',                  // Local React/Vite
-  'http://127.0.0.1:5500',                 // Alternative localhost
-  'http://localhost:8080'                  // Additional local port
+  'https://sunriserealestate.netlify.app',
+  'http://sunriserealestate.netlify.app',
+  'http://localhost:5500',
+  'http://localhost:3000',
+  'http://127.0.0.1:5500',
+  'http://localhost:8080'
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.includes(origin)) {
@@ -61,9 +60,9 @@ app.get("/", (req, res) => {
       signup: "POST /signup",
       contact: "POST /contact",
       customer_details: "GET /customer_details",
-      contacts: "GET /contacts",          // ✅ NEW FOR ADMIN
-      searches: "GET /searches",         // ✅ NEW FOR ADMIN
-      search_stats: "GET /search_stats", // ✅ NEW FOR ADMIN
+      contacts: "GET /contacts",
+      searches: "GET /searches",
+      search_stats: "GET /search_stats",
       search: "POST /search",
       search_data: "GET /search_data",
       check_tables: "GET /api/check-tables"
@@ -128,10 +127,8 @@ const createTables = () => {
       email VARCHAR(100) NOT NULL,
       number VARCHAR(20),
       query TEXT NOT NULL,
-      status VARCHAR(20) DEFAULT 'new',  // ✅ ADDED STATUS FIELD
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_status (status),
-      INDEX idx_created_at (created_at)
+      status VARCHAR(20) DEFAULT 'new',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`,
     
     `CREATE TABLE IF NOT EXISTS search (
@@ -144,9 +141,7 @@ const createTables = () => {
       area VARCHAR(50),
       pstatus VARCHAR(50),
       sort VARCHAR(50),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_property (property),
-      INDEX idx_created_at (created_at)
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`
   ];
 
@@ -194,7 +189,6 @@ app.post("/signup", function (req, res) {
     
     const { username, emailid, pass, address, contact } = req.body;
     
-    // Validation
     if (!username || !emailid || !pass) {
       return res.status(400).json({ 
         error: "Missing required fields",
@@ -273,7 +267,7 @@ app.post("/contact", function (req, res) {
   }
 });
 
-// ---------- GET ALL CUSTOMER DETAILS (FOR ADMIN) ----------
+// ---------- GET ALL CUSTOMER DETAILS ----------
 app.get('/customer_details', (req, res) => {
   console.log("📋 Fetching customer details");
   
@@ -298,7 +292,7 @@ app.get('/customer_details', (req, res) => {
   });
 });
 
-// ---------- GET ALL CONTACTS (FOR ADMIN PANEL - NEW ENDPOINT) ----------
+// ---------- GET ALL CONTACTS (FOR ADMIN PANEL) ----------
 app.get('/contacts', (req, res) => {
   console.log("📞 ADMIN: Fetching all contacts for admin panel");
   
@@ -313,7 +307,6 @@ app.get('/contacts', (req, res) => {
       });
     }
     
-    // Format for admin panel
     const formattedResults = results.map(row => ({
       id: row.id,
       name: row.name,
@@ -329,7 +322,6 @@ app.get('/contacts', (req, res) => {
     
     console.log(`✅ ADMIN: Found ${formattedResults.length} contacts`);
     
-    // Send just the array (as admin panel expects)
     res.json(formattedResults);
   });
 });
@@ -341,7 +333,6 @@ app.post("/search", function (req, res) {
     
     const { property, location, price, rooms, bathroom, area, pstatus, sort } = req.body;
     
-    // Save search to database
     const sql = "INSERT INTO `search` (property, location, price, rooms, bathroom, area, pstatus, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     pool.query(sql, [property, location, price, rooms, bathroom, area, pstatus, sort], function (error, result) {
@@ -351,7 +342,6 @@ app.post("/search", function (req, res) {
         console.log("✅ Search saved to database");
       }
       
-      // Return sample properties for Sunrise Real Estate
       const properties = [
         {
           id: 1,
@@ -394,7 +384,6 @@ app.post("/search", function (req, res) {
         }
       ];
       
-      // Filter based on search criteria (basic filtering)
       let filteredProperties = properties;
       
       if (property && property !== 'Any') {
@@ -430,7 +419,7 @@ app.post("/search", function (req, res) {
   }
 });
 
-// ---------- SEARCH DATA (OLD VERSION) ----------
+// ---------- SEARCH DATA ----------
 app.get('/search_data', (req, res) => {
   console.log("📊 Fetching search history");
   
@@ -455,7 +444,7 @@ app.get('/search_data', (req, res) => {
   });
 });
 
-// ---------- GET ALL SEARCHES (FOR ADMIN PANEL - NEW ENDPOINT) ----------
+// ---------- GET ALL SEARCHES (FOR ADMIN PANEL) ----------
 app.get('/searches', (req, res) => {
   console.log("🔍 ADMIN: Fetching all searches for admin panel");
   
@@ -470,7 +459,6 @@ app.get('/searches', (req, res) => {
       });
     }
     
-    // Format for admin panel
     const formattedResults = results.map(row => ({
       id: row.id,
       property: row.property,
@@ -493,120 +481,81 @@ app.get('/searches', (req, res) => {
     
     console.log(`✅ ADMIN: Found ${formattedResults.length} searches`);
     
-    // Send just the array (as admin panel expects)
     res.json(formattedResults);
   });
 });
 
-// ---------- SEARCH STATS (ADMIN DASHBOARD) ----------
+// ---------- SEARCH STATS ----------
 app.get('/search_stats', (req, res) => {
-  console.log("📈 ADMIN: Fetching search statistics");
+  console.log("📈 Fetching search statistics");
   
-  const queries = {
-    totalSearches: 'SELECT COUNT(*) as count FROM search',
-    mostSearchedType: `
-      SELECT property, COUNT(*) as count 
-      FROM search 
-      GROUP BY property 
-      ORDER BY count DESC 
-      LIMIT 1
-    `,
-    avgBudget: `
-      SELECT ROUND(AVG(
-        CASE 
-          WHEN price LIKE '%crore%' THEN 100
-          WHEN price LIKE '%lakh%' THEN 
-            CAST(REPLACE(REPLACE(price, 'lakh', ''), ' ', '') AS DECIMAL)
-          ELSE 5
-        END
-      )) as avg_budget FROM search WHERE price IS NOT NULL
-    `
-  };
-  
-  pool.query(queries.totalSearches, (err, totalResult) => {
-    if (err) {
-      console.error('Error fetching total searches:', err);
-      return res.status(500).json({ error: true, message: 'Error fetching stats' });
-    }
-    
-    pool.query(queries.mostSearchedType, (err, typeResult) => {
-      if (err) {
-        console.error('Error fetching most searched type:', err);
-        return res.status(500).json({ error: true, message: 'Error fetching stats' });
-      }
-      
-      pool.query(queries.avgBudget, (err, budgetResult) => {
-        if (err) {
-          console.error('Error fetching avg budget:', err);
-          return res.status(500).json({ error: true, message: 'Error fetching stats' });
-        }
-        
-        const stats = {
-          totalSearches: totalResult[0]?.count || 0,
-          mostSearchedType: typeResult[0] ? typeResult[0].property : 'N/A',
-          mostSearchedCount: typeResult[0]?.count || 0,
-          avgBudget: budgetResult[0]?.avg_budget 
-            ? `₹${budgetResult[0].avg_budget} Lakh` 
-            : 'N/A'
-        };
-        
-        console.log('📊 ADMIN: Search Statistics:', stats);
-        
-        res.json({
-          success: true,
-          ...stats,
-          timestamp: new Date().toISOString()
-        });
+  const queries = [
+    'SELECT COUNT(*) as total_searches FROM search',
+    'SELECT property, COUNT(*) as count FROM search GROUP BY property ORDER BY count DESC LIMIT 1',
+    'SELECT DATE(created_at) as date, COUNT(*) as daily_searches FROM search GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 7'
+  ];
+
+  Promise.all(queries.map(q => {
+    return new Promise((resolve, reject) => {
+      pool.query(q, (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
       });
+    });
+  }))
+  .then(results => {
+    res.json({
+      success: true,
+      app: "Sunrise Real Estate",
+      totalSearches: results[0][0]?.total_searches || 0,
+      mostSearchedType: results[1][0]?.property || 'N/A',
+      mostSearchedCount: results[1][0]?.count || 0,
+      last7Days: results[2] || [],
+      timestamp: new Date().toISOString()
+    });
+  })
+  .catch(err => {
+    console.error("❌ Search stats error:", err.message);
+    res.status(500).json({ 
+      error: 'Error fetching search statistics',
+      details: err.message 
     });
   });
 });
 
-// ---------- CONTACT STATS (ADMIN DASHBOARD) ----------
+// ---------- CONTACT STATS ----------
 app.get('/contact_stats', (req, res) => {
-  console.log("📞 ADMIN: Fetching contact statistics");
+  console.log("📞 Fetching contact statistics");
   
-  const queries = {
-    totalContacts: 'SELECT COUNT(*) as count FROM customer_details',
-    newMessages: 'SELECT COUNT(*) as count FROM customer_details WHERE status = "new"',
-    todayContacts: `
-      SELECT COUNT(*) as count FROM customer_details 
-      WHERE DATE(created_at) = CURDATE()
-    `
-  };
-  
-  pool.query(queries.totalContacts, (err, totalResult) => {
-    if (err) {
-      console.error('Error fetching total contacts:', err);
-      return res.status(500).json({ error: true, message: 'Error fetching stats' });
-    }
-    
-    pool.query(queries.newMessages, (err, newResult) => {
-      if (err) {
-        console.error('Error fetching new messages:', err);
-        return res.status(500).json({ error: true, message: 'Error fetching stats' });
-      }
-      
-      pool.query(queries.todayContacts, (err, todayResult) => {
-        if (err) {
-          console.error('Error fetching today contacts:', err);
-          return res.status(500).json({ error: true, message: 'Error fetching stats' });
-        }
-        
-        const stats = {
-          totalContacts: totalResult[0]?.count || 0,
-          newMessages: newResult[0]?.count || 0,
-          todayContacts: todayResult[0]?.count || 0
-        };
-        
-        console.log('📞 ADMIN: Contact Statistics:', stats);
-        
-        res.json({
-          success: true,
-          ...stats,
-          timestamp: new Date().toISOString()
-        });
+  const queries = [
+    'SELECT COUNT(*) as total_contacts FROM customer_details',
+    'SELECT COUNT(*) as new_messages FROM customer_details WHERE status = "new"',
+    'SELECT DATE(created_at) as date, COUNT(*) as daily_contacts FROM customer_details GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 7'
+  ];
+
+  Promise.all(queries.map(q => {
+    return new Promise((resolve, reject) => {
+      pool.query(q, (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
       });
+    });
+  }))
+  .then(results => {
+    res.json({
+      success: true,
+      app: "Sunrise Real Estate",
+      totalContacts: results[0][0]?.total_contacts || 0,
+      newMessages: results[1][0]?.new_messages || 0,
+      last7Days: results[2] || [],
+      timestamp: new Date().toISOString()
+    });
+  })
+  .catch(err => {
+    console.error("❌ Contact stats error:", err.message);
+    res.status(500).json({ 
+      error: 'Error fetching contact statistics',
+      details: err.message 
     });
   });
 });
@@ -673,10 +622,10 @@ app.use((req, res) => {
       'POST /signup',
       'POST /contact',
       'GET /customer_details',
-      'GET /contacts',          // ✅ NEW
-      'GET /searches',         // ✅ NEW
-      'GET /search_stats',     // ✅ NEW
-      'GET /contact_stats',    // ✅ NEW
+      'GET /contacts',
+      'GET /searches',
+      'GET /search_stats',
+      'GET /contact_stats',
       'POST /search',
       'GET /search_data',
       'PUT /contacts/:id/status'
